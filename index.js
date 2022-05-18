@@ -12,6 +12,7 @@ const session = require("express-session");
 ///////////////////////
 
 const frontendURL = process.env.FRONTEND;
+const PORT = process.env.LISTEN_PORT;
 
 const app = express();
 app.use(express.json());
@@ -210,8 +211,8 @@ app.put("/update", (req, res) => {
   );
 });
 
-app.listen(3001, () => {
-  console.log("Server running.");
+app.listen(PORT, () => {
+  console.log("Server running. Listening on port "+PORT);
 });
 
 /*
