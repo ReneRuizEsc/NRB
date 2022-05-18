@@ -75,9 +75,14 @@ app.get("/login", (req, res) => {
 
 app.get("/userinfo", (req, res) => {
   const email = [req.query.email];
-
+  const queryStr = `
+  SELECT Nombre, AP, AM, Telefono, Apodo, Fechanac, verificacion, kmtotales, velocidadpromedio, fotoperfil, tiempoviaje, identificacion
+  FROM Persona 
+  INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 
+  INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
+  `
   client.query(
-    "SELECT Nombre, AP, AM, Telefono, Apodo FROM Persona INNER JOIN Cuenta_Usuario ON idPersona = (SELECT idUsuario FROM Cuenta_Usuario WHERE Correo = $1) ",
+    queryStr,
     [String(email)],
     (err, result) => {
       if (err) {
@@ -102,7 +107,7 @@ app.post("/login", (req, res) => {
       if (err) {
         console.log(err);
         res.send({ error: err }); //funciona como return
-        return;
+        //return;
       }
 
       if (result.rows.length > 0) {
@@ -125,6 +130,49 @@ app.post("/logout", (req, res) => {
   } else {
     res.send({ isLogged: false });
   }
+});
+
+app.post("/createAccount", (req, res) => {
+  const email = req.body.email;
+  const username = req.body.username;
+  const name = req.body.name;
+  const ap = req.body.ap;
+  const am = req.body.am;
+  const phone = req.body.phone;
+  const birthDate = req.body.birthDate;
+  const password = req.body.password;
+
+  const queryStr = `
+  with first_insert as (
+    insert into persona(nombre, ap, am, fechanac) 
+    values($1, $2, $3, $4) 
+    RETURNING idPersona
+  ), 
+  second_insert as (
+   insert into cuenta_usuario( idUsuario, correo, contrasena, telefono, apodo) 
+   values
+   ( (select idPersona from first_insert), $5, $6, $7, $8)
+   RETURNING idUsuario
+  )
+  insert into informacion_cuenta ( idInformacion_cuenta, KmTotales, VelocidadPromedio, TiempoViaje, FotoPerfil) 
+  values 
+  ( (select idUsuario from second_insert), '0', '0', '0', '/')
+  `
+
+  client.query(
+    queryStr,
+    [name, ap, am, birthDate, email, password, phone, username],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.send({ error: 'El correo ya está registrado' }); //funciona como return
+        return;
+      }
+console.log('From create account: ');
+      console.log(result)
+      res.send({ created: true})
+    }
+  );
 });
 
 app.put("/update", (req, res) => {
@@ -192,7 +240,7 @@ app.get('/userinfo', (req, res) => { // MySQL
     const email = [req.query.email];
 
     console.log('get userinfo: '+ email);
-    db.query("SELECT Nombre, AP, AM FROM Persona WHERE idPersona = (SELECT idUsuario FROM Cuenta_Usuario WHERE Correo = ?) ", [email],
+    db.query("SELECT Nombre, AP, AM FROM Persona WHERE idPersona = (SELECT idUsuario FROM Cuenta_Usuario WHERE Correo = $1) ", [email],
     (err, result) => {
         if(err){
             
