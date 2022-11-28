@@ -10,7 +10,7 @@ const bodyParser = require("body-parser");
 //const cookieParser = require('cookie-parser');
 const session = require("express-session");
 ///////////////////////
-
+const oneDay = 1000 * 60 * 60 * 24;
 const frontendURL = process.env.FRONTEND;
 const PORT = process.env.LISTEN_PORT;
 
@@ -33,7 +33,12 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 30 * 24 * 60 * 1000, //30 días
+      maxAge: oneDay,
+      //sameSite: 'strict',
+
+      secure: "auto",
+      httpOnly: true,
+      sameSite: 'none',
     },
   })
 );
@@ -52,7 +57,7 @@ const db = new Pool({
   user: "postgres",
   host: "127.0.0.1",
   database: "nicerider",
-  password: "pikachu09",
+  password: "pikachu99",
   port: 5432,
 });
 
@@ -65,7 +70,7 @@ try {
 }
 ///////////////////////////////////
 
-app.get("/login", (req, res) => {
+app.get("/checkLogin", (req, res) => {
   // Este get sirve para verificar si hay una sesión guardada
   if (req.session.user) {
     res.send({ isLogged: true, user: req.session.user });
@@ -77,7 +82,7 @@ app.get("/login", (req, res) => {
 app.get("/userinfo", (req, res) => {
   const email = [req.query.email];
   const queryStr = `
-  SELECT Nombre, AP, AM, Telefono, Apodo, Fechanac, verificacion, kmtotales, velocidadpromedio, fotoperfil, tiempoviaje, identificacion
+  SELECT Nombre, AP, AM, Telefono, Apodo, Fechanac, verificacion, kmtotales, velocidadpromedio, fotoperfil, tiempoviaje, identificacion, idUsuario
   FROM Persona 
   INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 
   INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
@@ -97,12 +102,80 @@ app.get("/userinfo", (req, res) => {
   );
 });
 
+app.get("/friendsList", (req, res) => {
+  const email = [req.query.email];
+  // const queryStr = `
+  // SELECT Nombre, AP, AM, Apodo, verificacion, fotoperfil
+  // FROM Persona 
+  // INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 
+  // INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
+  // `
+  const queryStr = `
+    SELECT amigos
+    FROM Cuenta_Usuario
+    WHERE correo = $1;
+  `
+  client.query(
+    queryStr,
+    [String(email)],
+    (err, result) => {
+      if (err) {
+        //console.log("error en la consulta");
+        console.log(err.stack);
+      } else {
+        console.log(result);
+        let vals = Object.values(result.rows[0])[0];
+        vals = JSON.parse(vals)
+        
+        if(vals === null)
+          res.send([])
+        else{
+          let newQuery = `
+            SELECT Nombre, AP, AM, Apodo, verificacion, fotoperfil, idUsuario
+            FROM Persona
+            INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND (idUsuario = $1
+          `
+          if(vals.length > 1){
+            for(let i=1; i<vals.length; i++){
+              newQuery += ' OR idUsuario = $' + (parseInt(i)+1);
+            }
+          }
+
+          newQuery += ') INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;';
+         
+          client.query(
+              newQuery,
+              vals,
+              (error, result2) => {
+                if(err)
+                  console.log(error.stack)
+                else{
+                  //console.log(result2.rows)
+                  res.send(result2.rows)
+                }
+              }
+          );
+          
+        }
+      
+      }
+    }
+  );
+});
+
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const queryStr = `
+    SELECT Correo, Nombre, AP, AM, Telefono, Apodo, Fechanac, verificacion, amigos, kmtotales, velocidadpromedio, fotoperfil, tiempoviaje, identificacion, idUsuario
+    FROM Persona 
+    INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 AND Contrasena = $2
+    INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
+    `;
 
   client.query(
-    "SELECT Correo FROM Cuenta_Usuario WHERE Correo = $1 AND Contrasena = $2",
+    //"SELECT Correo FROM Cuenta_Usuario WHERE Correo = $1 AND Contrasena = $2"
+    queryStr,
     [email, password],
     (err, result) => {
       if (err) {
@@ -113,10 +186,10 @@ app.post("/login", (req, res) => {
 
       if (result.rows.length > 0) {
         // si el usuario existe,
-        req.session.user = result.rows; //crear una sesión para el usuario
+        req.session.user = result.rows[0]; //crear una sesión para el usuario
         console.log("sesión creada");
         console.log(req.session.user);
-        res.send(result.rows);
+        res.send(result.rows[0]);
       } else {
         res.send({ message: "Correo o contraseña incorrectos." });
         console.log(result);
@@ -174,6 +247,69 @@ console.log('From create account: ');
       res.send({ created: true})
     }
   );
+});
+
+app.post("/createClub", (req, res) => {
+  const idusuario = req.body.idusuario;
+  const roles = req.body.roles;
+  const nombreClub = req.body.nombreClub;
+  let ids = [];
+
+  let firstPart = `
+    with first_insert as (
+      insert into club(nombreclub, presidente 
+  
+  `
+
+    let secondPart = `) values ($1, $2`;
+
+    
+    let lastIndex = 0;
+
+    roles.forEach(([key, val], i) => {
+      firstPart += `, ${key}`;
+      secondPart += `, $${i+3}`;
+      ids.push(val)
+      lastIndex = i+3;
+    });
+
+    lastIndex += 1;
+
+    let thirdPart = `) RETURNING id )
+    
+        insert into cuenta_club(idusuario, idclub)
+        values (
+          $${lastIndex}, (select id from first_insert)
+        )
+          
+    `;
+
+    let fourthPart = `;`;
+
+    lastIndex += 1;
+
+    roles.forEach(([key, val], i) => {
+      thirdPart += `, ($${lastIndex+i}, (select id from first_insert))`;
+    });
+
+    let query = firstPart + secondPart + thirdPart + fourthPart;
+
+    console.log(query);
+
+    client.query(
+      query,
+      [nombreClub, idusuario, ...ids, idusuario, ...ids],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({ error: 'Hubo un problema. Intenta más tarde.' }); //funciona como return
+          return;
+        }
+
+        console.log(result)
+        res.send({ created: true})
+      }
+    );
 });
 
 app.put("/update", (req, res) => {
