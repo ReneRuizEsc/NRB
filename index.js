@@ -53,11 +53,18 @@ const db = mysql.createConnection({
 });*/
 let client = null;
 
+// const db = new Pool({
+//   user: "postgres",
+//   host: "127.0.0.1",
+//   database: "nicerider",
+//   password: "pikachu99",
+//   port: 5432,
+// });
 const db = new Pool({
-  user: "postgres",
-  host: "127.0.0.1",
-  database: "nicerider",
-  password: "pikachu99",
+  user: "goldkkme",
+  host: "peanut.db.elephantsql.com",
+  database: "goldkkme",
+  password: "FcXXaYxve6R_cjWWwod7xUv9FI-R99Cv",
   port: 5432,
 });
 
@@ -216,26 +223,38 @@ app.post("/createAccount", (req, res) => {
   const birthDate = req.body.birthDate;
   const password = req.body.password;
 
+  // const queryStr = `
+  // with first_insert as (
+  //   insert into persona(nombre, ap, am, fechanac) 
+  //   values($1, $2, $3, $4) 
+  //   RETURNING idPersona
+  // ), 
+  // second_insert as (
+  //  insert into cuenta_usuario( idUsuario, correo, contrasena, telefono, apodo) 
+  //  values
+  //  ( (select idPersona from first_insert), $5, $6, $7, $8)
+  //  RETURNING idUsuario
+  // )
+  // insert into informacion_cuenta ( idInformacion_cuenta, KmTotales, VelocidadPromedio, TiempoViaje, FotoPerfil) 
+  // values 
+  // ( (select idUsuario from second_insert), '0', '0', '0', '/')
+  // `;
+
   const queryStr = `
   with first_insert as (
-    insert into persona(nombre, ap, am, fechanac) 
-    values($1, $2, $3, $4) 
-    RETURNING idPersona
-  ), 
-  second_insert as (
-   insert into cuenta_usuario( idUsuario, correo, contrasena, telefono, apodo) 
+    insert into cuenta(correo, contrasena) 
+    values($1, $2) 
+    RETURNING idcuenta
+  ) 
+   insert into usuario( nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idcuenta_fk, fechanac) 
    values
-   ( (select idPersona from first_insert), $5, $6, $7, $8)
-   RETURNING idUsuario
-  )
-  insert into informacion_cuenta ( idInformacion_cuenta, KmTotales, VelocidadPromedio, TiempoViaje, FotoPerfil) 
-  values 
-  ( (select idUsuario from second_insert), '0', '0', '0', '/')
-  `
+   ( $3, $4, $5, $6, $7, $8, $9, (select idcuenta from first_insert), $10)
+   
+  `;
 
   client.query(
     queryStr,
-    [name, ap, am, birthDate, email, password, phone, username],
+    [email, password, name, ap, am, username, '', phone, '', birthDate],
     (err, result) => {
       if (err) {
         console.log(err);
