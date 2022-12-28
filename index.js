@@ -18,7 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: [frontendURL],
+    origin: [frontendURL, 'http://192.168.0.57:3000'],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -173,11 +173,17 @@ app.get("/friendsList", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  // const queryStr = `
+  //   SELECT Correo, Nombre, AP, AM, Telefono, Apodo, Fechanac, verificacion, amigos, kmtotales, velocidadpromedio, fotoperfil, tiempoviaje, identificacion, idUsuario
+  //   FROM Persona 
+  //   INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 AND Contrasena = $2
+  //   INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
+  //   `;
+
   const queryStr = `
-    SELECT Correo, Nombre, AP, AM, Telefono, Apodo, Fechanac, verificacion, amigos, kmtotales, velocidadpromedio, fotoperfil, tiempoviaje, identificacion, idUsuario
-    FROM Persona 
-    INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 AND Contrasena = $2
-    INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
+    SELECT correo, nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idcuenta_fk, fechanac
+    FROM usuario 
+    INNER JOIN cuenta ON idcuenta = idcuenta_fk AND Correo = $1 AND Contrasena = $2;
     `;
 
   client.query(
