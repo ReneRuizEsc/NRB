@@ -319,8 +319,7 @@ app.put("/update", (req, res) => {
              numerotelefonico = $5,
              tipodesangre = $6
 
-        WHERE idUsuario = ( SELECT idUsuario from Cuenta WHERE correo = $7 )
-        returning idUsuario;`,
+        WHERE idcuenta_fk = ( SELECT idcuenta from Cuenta WHERE correo = $7 );`,
     [name, apellido1, apellido2, username, phone, blood, email],
     (err, result) => {
       if (err) {
