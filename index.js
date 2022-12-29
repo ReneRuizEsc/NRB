@@ -349,8 +349,7 @@ app.put("/update", (req, res) => {
   ];
 
   client.query(
-    `with persona_update as (
-        UPDATE Usuario
+    `UPDATE Usuario
          SET nombre = $1, 
              ap = $2, 
              am = $3,
@@ -359,8 +358,7 @@ app.put("/update", (req, res) => {
              tipodesangre = $6
 
         WHERE idUsuario = ( SELECT idUsuario from Cuenta WHERE correo = $7 )
-        returning idUsuario
-      );`,
+        returning idUsuario;`,
     [name, apellido1, apellido2, username, phone, blood, email],
     (err, result) => {
       if (err) {
