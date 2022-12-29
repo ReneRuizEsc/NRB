@@ -338,29 +338,30 @@ app.post("/createClub", (req, res) => {
 });
 
 app.put("/update", (req, res) => {
-  const [email, username, name, apellido1, apellido2, phone] = [
+  const [email, username, name, apellido1, apellido2, phone, blood] = [
       req.body.email,
     req.body.username,
     req.body.name,
     req.body.apellido1,
     req.body.apellido2,
-    req.body.phone
+    req.body.phone,
+    req.body.tipodesangre
   ];
 
   client.query(
     `with persona_update as (
-        UPDATE Persona
+        UPDATE Usuario
          SET nombre = $1, 
              ap = $2, 
-             am = $3
-               
-        WHERE idPersona = ( SELECT idUsuario from Cuenta_Usuario WHERE correo = $4 )
-        returning idPersona
-      )
-      UPDATE Cuenta_Usuario 
-        SET Apodo = $5, telefono = $6
-      WHERE idUsuario IN (select idPersona from persona_update);`,
-    [name, apellido1, apellido2, email, username, phone],
+             am = $3,
+             apodo = $4,
+             numerotelefonico = $5,
+             tipodesangre = $6
+
+        WHERE idUsuario = ( SELECT idUsuario from Cuenta WHERE correo = $7 )
+        returning idUsuario
+      );`,
+    [name, apellido1, apellido2, username, phone, blood, email],
     (err, result) => {
       if (err) {
         res.send({ error: err }); //funciona como return
