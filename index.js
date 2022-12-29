@@ -181,7 +181,7 @@ app.post("/login", (req, res) => {
   //   `;
 
   const queryStr = `
-    SELECT correo, nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idcuenta_fk, fechanac
+    SELECT correo, nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idusuario, fechanac
     FROM usuario 
     INNER JOIN cuenta ON idcuenta = idcuenta_fk AND Correo = $1 AND Contrasena = $2;
     `;
