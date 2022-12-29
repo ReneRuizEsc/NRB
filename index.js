@@ -9,6 +9,7 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 //const cookieParser = require('cookie-parser');
 const session = require("express-session");
+const { loginFn } = require("./fn_queries/index");
 ///////////////////////
 const oneDay = 1000 * 60 * 60 * 24;
 const frontendURL = process.env.FRONTEND;
@@ -86,130 +87,91 @@ app.get("/checkLogin", (req, res) => {
   }
 });
 
-app.get("/userinfo", (req, res) => {
-  const email = [req.query.email];
-  const queryStr = `
-  SELECT Nombre, AP, AM, Telefono, Apodo, Fechanac, verificacion, kmtotales, velocidadpromedio, fotoperfil, tiempoviaje, identificacion, idUsuario
-  FROM Persona 
-  INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 
-  INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
-  `
-  client.query(
-    queryStr,
-    [String(email)],
-    (err, result) => {
-      if (err) {
-        console.log("error en la consulta");
-        console.log(err.stack);
-      } else {
-        console.log(result);
-        res.send({ userdata: result.rows[0] });
-      }
-    }
-  );
-});
+// app.get("/userinfo", (req, res) => {
+//   const email = [req.query.email];
+//   const queryStr = `
+//   SELECT Nombre, AP, AM, Telefono, Apodo, Fechanac, verificacion, kmtotales, velocidadpromedio, fotoperfil, tiempoviaje, identificacion, idUsuario
+//   FROM Persona 
+//   INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 
+//   INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
+//   `
+//   client.query(
+//     queryStr,
+//     [String(email)],
+//     (err, result) => {
+//       if (err) {
+//         console.log("error en la consulta");
+//         console.log(err.stack);
+//       } else {
+//         console.log(result);
+//         res.send({ userdata: result.rows[0] });
+//       }
+//     }
+//   );
+// });
 
-app.get("/friendsList", (req, res) => {
-  const email = [req.query.email];
-  // const queryStr = `
-  // SELECT Nombre, AP, AM, Apodo, verificacion, fotoperfil
-  // FROM Persona 
-  // INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 
-  // INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
-  // `
-  const queryStr = `
-    SELECT amigos
-    FROM Cuenta_Usuario
-    WHERE correo = $1;
-  `
-  client.query(
-    queryStr,
-    [String(email)],
-    (err, result) => {
-      if (err) {
-        //console.log("error en la consulta");
-        console.log(err.stack);
-      } else {
-        console.log(result);
-        let vals = Object.values(result.rows[0])[0];
-        vals = JSON.parse(vals)
+// app.get("/friendsList", (req, res) => {
+//   const email = [req.query.email];
+//   // const queryStr = `
+//   // SELECT Nombre, AP, AM, Apodo, verificacion, fotoperfil
+//   // FROM Persona 
+//   // INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 
+//   // INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
+//   // `
+//   const queryStr = `
+//     SELECT amigos
+//     FROM Cuenta_Usuario
+//     WHERE correo = $1;
+//   `
+//   client.query(
+//     queryStr,
+//     [String(email)],
+//     (err, result) => {
+//       if (err) {
+//         //console.log("error en la consulta");
+//         console.log(err.stack);
+//       } else {
+//         console.log(result);
+//         let vals = Object.values(result.rows[0])[0];
+//         vals = JSON.parse(vals)
         
-        if(vals === null)
-          res.send([])
-        else{
-          let newQuery = `
-            SELECT Nombre, AP, AM, Apodo, verificacion, fotoperfil, idUsuario
-            FROM Persona
-            INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND (idUsuario = $1
-          `
-          if(vals.length > 1){
-            for(let i=1; i<vals.length; i++){
-              newQuery += ' OR idUsuario = $' + (parseInt(i)+1);
-            }
-          }
+//         if(vals === null)
+//           res.send([])
+//         else{
+//           let newQuery = `
+//             SELECT Nombre, AP, AM, Apodo, verificacion, fotoperfil, idUsuario
+//             FROM Persona
+//             INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND (idUsuario = $1
+//           `
+//           if(vals.length > 1){
+//             for(let i=1; i<vals.length; i++){
+//               newQuery += ' OR idUsuario = $' + (parseInt(i)+1);
+//             }
+//           }
 
-          newQuery += ') INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;';
+//           newQuery += ') INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;';
          
-          client.query(
-              newQuery,
-              vals,
-              (error, result2) => {
-                if(err)
-                  console.log(error.stack)
-                else{
-                  //console.log(result2.rows)
-                  res.send(result2.rows)
-                }
-              }
-          );
+//           client.query(
+//               newQuery,
+//               vals,
+//               (error, result2) => {
+//                 if(err)
+//                   console.log(error.stack)
+//                 else{
+//                   //console.log(result2.rows)
+//                   res.send(result2.rows)
+//                 }
+//               }
+//           );
           
-        }
+//         }
       
-      }
-    }
-  );
-});
+//       }
+//     }
+//   );
+// });
 
-app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  // const queryStr = `
-  //   SELECT Correo, Nombre, AP, AM, Telefono, Apodo, Fechanac, verificacion, amigos, kmtotales, velocidadpromedio, fotoperfil, tiempoviaje, identificacion, idUsuario
-  //   FROM Persona 
-  //   INNER JOIN Cuenta_Usuario ON idPersona = idUsuario AND Correo = $1 AND Contrasena = $2
-  //   INNER JOIN informacion_cuenta ON idusuario = idinformacion_cuenta;
-  //   `;
-
-  const queryStr = `
-    SELECT correo, nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idusuario, fechanac
-    FROM usuario 
-    INNER JOIN cuenta ON idcuenta = idcuenta_fk AND Correo = $1 AND Contrasena = $2;
-    `;
-
-  client.query(
-    //"SELECT Correo FROM Cuenta_Usuario WHERE Correo = $1 AND Contrasena = $2"
-    queryStr,
-    [email, password],
-    (err, result) => {
-      if (err) {
-        console.log(err);
-        res.send({ error: err }); //funciona como return
-        //return;
-      }
-
-      if (result.rows.length > 0) {
-        // si el usuario existe,
-        req.session.user = result.rows[0]; //crear una sesión para el usuario
-        console.log("sesión creada");
-        console.log(req.session.user);
-        res.send(result.rows[0]);
-      } else {
-        res.send({ message: "Correo o contraseña incorrectos." });
-        console.log(result);
-      }
-    }
-  );
-});
+app.post("/login", (req, res) => loginFn(req, res));
 
 app.post("/logout", (req, res) => {
   if (req.session.user) {
