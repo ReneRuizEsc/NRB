@@ -51,7 +51,9 @@ const { updateUserFn } = require("./fn_queries/updateUserFile"); //email, userna
 
 //Faltan por poner en front
 const { newClubFn } = require("./fn_queries/newClubFile"); //idUsuario, nombreClub, reglamento(archivo), presentacion
-const { allergyAggUFn } = require("./fn_queries/newAllergyUFile");//idUsuario, alergia
+const { allergyAggUFn } = require("./fn_queries/newAllergyUFile"); //idUsuario, alergia
+const { verifyUserFn } = require("./fn_queries/verifyUserFile"); //idUsuario, fotofrontal, fototrasera, fotorostro
+const { verifyAdminFn } = require("./fn_queries/verifyAdminFile"); //idUsuario
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -64,6 +66,8 @@ app.post("/createClub", (req, res) => newClubFn(req, res));
 
 //Cambios en el front
 app.post("/addAllergyUser", (req, res) => allergyAggUFn(req, res));
+app.post("/verifyUser", (req, res) => verifyUserFn(req, res));
+app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 

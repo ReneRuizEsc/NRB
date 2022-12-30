@@ -8,8 +8,9 @@ Funciones:
 - newUserFile: Registrar Usuario.[*]
 - Agregar dirección de usuario.[]
 - updateUserFile: Modificar perfil Usuario.[*]
-- allergyAggUFn: Agregar alergias Usuario.[*]
-- Verificar perfil.[]
+- newAllergyUFile: Agregar alergias Usuario.[*]
+- verifyUserFile: Verificar perfil.[*] -- El usuario manda las fotos
+- verifyAdminFile: Verificar perfil.[*] -- Si se invoca se pone en true la verificacion
 - Agregar motocicleta.[]
 - Editar información motocicleta.[]
 - Agregar acompañante.[]
@@ -39,7 +40,7 @@ Funciones:
 - Mostrar información de club.[]
 - Solicitar unirse a club.[]
 - Unirse a club.[]
-- newClubFile: Crear club.[*]------ Falta ser usuario verificado && No pertenece a algun club
+- newClubFile: Crear club.[*] -- Falta ser usuario verificado && No pertenece a algun club
   - Agregar dirección de club.[]
   - Agregar colores de club.[]
 - Agregar reporte de gastos.[]
