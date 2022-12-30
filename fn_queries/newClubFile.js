@@ -19,57 +19,48 @@ try {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
+// Debe ser usuario verificado && No pertenece a algun club -> Queda asignado como presidente
+
+// Nombre, Reglamento, Presentacion <- Club
+// idUsuario_FK, idClub_FK, FechaIngreso, FechaRenovacion, SuscripcionMeses <- Miembro_Club
+// idMiembro_FK, 1 <- Cargos
 
 const newClubFn = (req, res) => {
     const idusuario = req.body.idusuario;
-    const roles = req.body.roles;
-    const nombreClub = req.body.nombreClub;
-    let ids = [];
+
+    const nombre = req.body.nombreClub;
+    const reglamento = req.body.reglamento;
+    const presentacion = req.body.presentacion;
+
+    //Esto puede ser un dolor de calcular
+    const mesesSuscripcion = 0;
+    //El creador del club no tiene membresía
+    const fechaRenovacion = new Date("12-31-2099");
+
+    //Fecha de ingreso el día de creación del club
+    const date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    const fechaIngreso = `${month}-${day}-${year}`;
+
+    // 1: Presidente, 2: Vicepresidente, 3: Sargento de armas, 4: Tesorero
+    // 5: Capitan de ruta, 6: Prospect, 7: Miembro; 8: Enforcer (Sin uso en la plataforma)
+    const cargo = 1;
   
-    let firstPart = `
+      let query = `
       with first_insert as (
-        insert into club(nombreclub, presidente 
-    
-    `
-  
-      let secondPart = `) values ($1, $2`;
-  
-      
-      let lastIndex = 0;
-  
-      roles.forEach(([key, val], i) => {
-        firstPart += `, ${key}`;
-        secondPart += `, $${i+3}`;
-        ids.push(val)
-        lastIndex = i+3;
-      });
-  
-      lastIndex += 1;
-  
-      let thirdPart = `) RETURNING id )
-      
-          insert into cuenta_club(idusuario, idclub)
-          values (
-            $${lastIndex}, (select id from first_insert)
-          )
-            
-      `;
-  
-      let fourthPart = `;`;
-  
-      lastIndex += 1;
-  
-      roles.forEach(([key, val], i) => {
-        thirdPart += `, ($${lastIndex+i}, (select id from first_insert))`;
-      });
-  
-      let query = firstPart + secondPart + thirdPart + fourthPart;
-  
-      console.log(query);
+        insert into club( nombre, reglamento, presentacion) 
+        values ($1, $2, $3) RETURNING idClub),
+      second_insert as (insert into Miembro_Club (SuscripcionMeses, FechaRenovacion, FechaIngreso, idClub_FK, idUsuario_FK) 
+        values ($4, $6, $7, (select idClub from first_insert), $8) RETURNING idMembresia)
+        insert into cargos(idMiembro_FK, Cargo_FK)
+        values ((select idMembresia from second_insert), $9)
+        ;`
   
       client.query(
         query,
-        [nombreClub, idusuario, ...ids, idusuario, ...ids],
+        [idusuario, nombre, reglamento, presentacion, mesesSuscripcion, fechaRenovacion, fechaIngreso, cargo],
         (err, result) => {
           if (err) {
             console.log(err);
@@ -77,7 +68,7 @@ const newClubFn = (req, res) => {
             return;
           }
   
-          console.log(result)
+        console.log(result)
           res.send({ created: true})
         }
       );

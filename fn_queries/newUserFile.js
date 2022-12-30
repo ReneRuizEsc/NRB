@@ -34,13 +34,10 @@ const newUserFn = (req, res) => {
     with first_insert as (
         insert into cuenta(correo, contrasena) 
         values($1, $2) 
-        RETURNING idcuenta
-    ) 
+        RETURNING idcuenta) 
         insert into usuario( nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idcuenta_fk, fechanac) 
-        values
-        ( $3, $4, $5, $6, $7, $8, $9, (select idcuenta from first_insert), $10)
-        
-    `;
+        values ( $3, $4, $5, $6, $7, $8, $9, (select idcuenta from first_insert), $10)
+        ;`
     
     client.query(
         queryStr,

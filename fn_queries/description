@@ -5,10 +5,10 @@ Funciones:
 - Cerrar sesión.[]
 
 //Usuario
-- newUserFile: Registrar Usuario.[*] email, username, name, ap, am, phone, birthDate, password
+- newUserFile: Registrar Usuario.[*]
 - Agregar dirección de usuario.[]
-- updateUserFile: Modificar perfil Usuario.[*] email, username, name, apellido1, apellido2, phone, tipodesangre
-- Agregar alergias Usuario.[]
+- updateUserFile: Modificar perfil Usuario.[*]
+- allergyAggUFn: Agregar alergias Usuario.[*]
 - Verificar perfil.[]
 - Agregar motocicleta.[]
 - Editar información motocicleta.[]
@@ -39,8 +39,7 @@ Funciones:
 - Mostrar información de club.[]
 - Solicitar unirse a club.[]
 - Unirse a club.[]
-- newClubFile: Crear club.[*]------ Falta hacer que sea un usuario verificado
-  - Asignar persona que registra como presidente del club.
+- newClubFile: Crear club.[*]------ Falta ser usuario verificado && No pertenece a algun club
   - Agregar dirección de club.[]
   - Agregar colores de club.[]
 - Agregar reporte de gastos.[]

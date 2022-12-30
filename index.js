@@ -22,8 +22,6 @@ app.use(
   })
 );
 
-////////////////////////////////////////////////////////////////////////////////////////////
-
 //app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -49,15 +47,23 @@ app.use(
 
 const { loginFn } = require("./fn_queries/loginFile"); //email, password
 const { newUserFn } = require("./fn_queries/newUserFile"); //email, username, name, ap, am, phone, birthDate, password
-const { newClubFn } = require("./fn_queries/newClubFile");
 const { updateUserFn } = require("./fn_queries/updateUserFile"); //email, username, name, apellido1, apellido2, phone, tipodesangre
+
+//Faltan por poner en front
+const { newClubFn } = require("./fn_queries/newClubFile"); //idUsuario, nombreClub, reglamento(archivo), presentacion
+const { allergyAggUFn } = require("./fn_queries/newAllergyUFile");//idUsuario, alergia
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+//app.("/", (req, res) => (req, res));
+
 app.post("/login", (req, res) => loginFn(req, res));
 app.post("/createAccount", (req, res) => newUserFn(req, res));
-app.post("/createClub", (req, res) => newClubFn(req, res));
 app.put("/update", (req, res) => updateUserFn(req, res));
+app.post("/createClub", (req, res) => newClubFn(req, res));
+
+//Cambios en el front
+app.post("/addAllergyUser", (req, res) => allergyAggUFn(req, res));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
