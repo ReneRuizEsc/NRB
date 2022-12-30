@@ -1,0 +1,64 @@
+Funciones:
+
+//Otras
+- loginFile: Iniciar sesión.[*] email, password
+- Cerrar sesión.[]
+
+//Usuario
+- newUserFile: Registrar Usuario.[*] email, username, name, ap, am, phone, birthDate, password
+- Agregar dirección de usuario.[]
+- updateUserFile: Modificar perfil Usuario.[*] email, username, name, apellido1, apellido2, phone, tipodesangre
+- Agregar alergias Usuario.[]
+- Verificar perfil.[]
+- Agregar motocicleta.[]
+- Editar información motocicleta.[]
+- Agregar acompañante.[]
+- Editar acompañante.[]
+- Agregar alergia Acompañante.[]
+- Eliminar cuenta.[]
+
+//Evento Individual
+- Crear evento individual.[]
+  - Agregar puntos de evento[]
+- Editar información evento indicidual.[]
+- Borrar evento individual.[]
+
+//Patrocinador
+- Mostrar lista de patrocinadores.[]
+- Registrar patrocinador.[]
+- Editar patrocinador.[]
+  - Agregar ubicaciones en mapa y direccion.[]
+  - Editar ubicaciones en mapa y direcciones.[]
+- Crear espacio público.[]
+  - Agregar fotos espacio público.[]
+  - Agregar productos.[]
+    - Agregar fotos producto.[]
+
+//Clubes
+- Mostrar lista de clubes.[]
+- Mostrar información de club.[]
+- Solicitar unirse a club.[]
+- Unirse a club.[]
+- newClubFile: Crear club.[*]------ Falta hacer que sea un usuario verificado
+  - Asignar persona que registra como presidente del club.
+  - Agregar dirección de club.[]
+  - Agregar colores de club.[]
+- Agregar reporte de gastos.[]
+- Agregar reporte de membresías.[]
+- Crear votacion.[]
+  - Agregar preguntas.[]
+  - Agregar archivos.[]
+- Publicar resutados de votación.[]
+- Crear comunicado.[]
+  - Agregar archivos comunicado.[]
+  - Agregar fotos comunicado.[]
+
+//Eventos
+- Crear evento.[]
+  - Agregar puntos de evento.[]
+  - Agregar archivos.[]
+  - Agregar ruta.[]
+- Crear recuento.[]
+  - Agregar fotos.[]
+  - Agregar ruta.[]
+  - Agregar puntos de recuento.

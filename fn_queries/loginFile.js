@@ -18,6 +18,8 @@ try {
   console.log(error);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+
 const loginFn = (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -53,6 +55,6 @@ const loginFn = (req, res) => {
     );
 }
 
-module.exports = {
-    loginFn
-}
+module.exports = { loginFn }
+
+////////////////////////////////////////////////////////////////////////////////////////////
