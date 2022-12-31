@@ -6,16 +6,16 @@ Funciones:
 
 //Usuario
 - newUserFile: Registrar Usuario.[*]
-- Agregar dirección de usuario.[]
+- Agregar dirección de usuario.[*]
 - updateUserFile: Modificar perfil Usuario.[*]
 - newAllergyUFile: Agregar alergias Usuario.[*]
 - verifyUserFile: Verificar perfil.[*] -- El usuario manda las fotos
 - verifyAdminFile: Verificar perfil.[*] -- Si se invoca se pone en true la verificacion
-- Agregar motocicleta.[]
-- Editar información motocicleta.[]
-- Agregar acompañante.[]
-- Editar acompañante.[]
-- Agregar alergia Acompañante.[]
+- Agregar motocicleta.[*]
+- Editar información motocicleta.[*]
+- Agregar acompañante.[*]
+- Editar acompañante.[*]
+- Agregar alergia Acompañante.[*]
 - Eliminar cuenta.[]
 
 //Evento Individual

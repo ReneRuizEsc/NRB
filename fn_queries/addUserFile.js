@@ -20,7 +20,7 @@ try {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const newUserFn = (req, res) => {
+const addUserFn = (req, res) => {
     const email = req.body.email;
     const username = req.body.username;
     const name = req.body.name;
@@ -55,6 +55,6 @@ const newUserFn = (req, res) => {
     );
 }
 
-module.exports = { newUserFn }
+module.exports = { addUserFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

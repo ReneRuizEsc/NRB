@@ -25,7 +25,7 @@ try {
 // idUsuario_FK, idClub_FK, FechaIngreso, FechaRenovacion, SuscripcionMeses <- Miembro_Club
 // idMiembro_FK, 1 <- Cargos
 
-const newClubFn = (req, res) => {
+const addClubFn = (req, res) => {
     const idusuario = req.body.idusuario;
 
     const nombre = req.body.nombreClub;
@@ -74,6 +74,6 @@ const newClubFn = (req, res) => {
       );
   }
 
-  module.exports = { newClubFn }
+  module.exports = { addClubFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

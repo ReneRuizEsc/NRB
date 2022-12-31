@@ -20,12 +20,13 @@ try {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const allergyAggUFn = (req, res) => {
-    const usuario = req.body.idusuario;
+const addAcompananteAllergyFn = (req, res) => {
+    const usuario = req.body.usuario;
     const alergia = req.body.alergia;
     
     const queryStr = `
-    insert into u_alergia (idusuario_fk, alergia) values ($1, $2)
+    INSERT into a_alergia (idusuario_fk, alergia)
+    values ($1, $2)
         ;`
     
     client.query(
@@ -35,16 +36,16 @@ const allergyAggUFn = (req, res) => {
         if (err)
         {
             console.log(err);
-            res.send({ error: 'Ya está registrada esa alergia' });
+            res.send({ error: 'Ups' });
             return;
         }
-        console.log('From register allergy: ');
+        console.log('From verification: ');
         console.log(result)
         res.send({ created: true})
         }
     );
 }
 
-module.exports = { allergyAggUFn }
+module.exports = { addAcompananteAllergyFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

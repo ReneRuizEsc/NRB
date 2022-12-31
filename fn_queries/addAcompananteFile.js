@@ -20,19 +20,24 @@ try {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const verifyAdminFn = (req, res) => {
+const addAcompananteFn = (req, res) => {
     const usuario = req.body.idusuario;
+    const nombre = req.body.nombre;
+    const ap = req.body.ap;
+    const am = req.body.am;
+    const apodo = req.body.apodo;
+    const fotoperfil = req.body.fotoperfil;
+    const tiposangre = req.body.tipodesangre;
+    const numerotelefonico = req.body.numerotelefonico;
     
     const queryStr = `
-    UPDATE
-    Verificacion 
-    set verificacion = TRUE
-    where idUsuario_fk = $1;
+    INSERT into acompanate (idusuario_fk, nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico)
+    values ($1, $2, $3, $4, $5, $6, $7, $8)
         ;`
     
     client.query(
         queryStr,
-        [usuario],
+        [usuario, nombre, ap, am, apodo, fotoperfil, tiposangre, numerotelefonico],
         (err, result) => {
         if (err)
         {
@@ -47,6 +52,6 @@ const verifyAdminFn = (req, res) => {
     );
 }
 
-module.exports = { verifyAdminFn }
+module.exports = { addAcompananteFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

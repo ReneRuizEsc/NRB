@@ -43,31 +43,43 @@ app.use(
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-//const {  } = require("./fn_queries/");
+//const {  } = require("./fn_queries/"); No borres esta wea
 
 const { loginFn } = require("./fn_queries/loginFile"); //email, password
-const { newUserFn } = require("./fn_queries/newUserFile"); //email, username, name, ap, am, phone, birthDate, password
+const { addUserFn } = require("./fn_queries/addUserFile"); //email, username, name, ap, am, phone, birthDate, password
 const { updateUserFn } = require("./fn_queries/updateUserFile"); //email, username, name, apellido1, apellido2, phone, tipodesangre
 
 //Faltan por poner en front
-const { newClubFn } = require("./fn_queries/newClubFile"); //idUsuario, nombreClub, reglamento(archivo), presentacion
-const { allergyAggUFn } = require("./fn_queries/newAllergyUFile"); //idUsuario, alergia
+const { addClubFn } = require("./fn_queries/addClubFile"); //idUsuario, nombreClub, reglamento(archivo), presentacion
+const { addUserAllergyFn } = require("./fn_queries/addUserAllergy"); //idUsuario, alergia
 const { verifyUserFn } = require("./fn_queries/verifyUserFile"); //idUsuario, fotofrontal, fototrasera, fotorostro
 const { verifyAdminFn } = require("./fn_queries/verifyAdminFile"); //idUsuario
+//const { addUserAddressFn } = require("./fn_queries/addUserAddressFile"); //idUsuario, pais, estado, municipio, colonia, calle, numero
+//const { addMotorcycleFn } = require("./fn_queries/addMotorcycleFile"); //marca, modelo, placas, foto, tarjetaCirculacion, idusuario
+//const { updateMotorcycleFn } = require("./fn_queries/updateMotorcycleFile"); //marca, modelo, placas, foto, tarjetaCirculacion, idusuario
+//const { addAcompananteFn } = require("./fn_queries/addAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, numerotelefonico
+//const { updateAcompananteFn } = require("./fn_queries/updateAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico
+//const { addAcompananteAllergyFn } = require("./fn_queries/addAcompananteAllergyFile"); //usuario, alergia
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-//app.("/", (req, res) => (req, res));
+//app.("/", (req, res) => (req, res)); Tampoco esta
 
 app.post("/login", (req, res) => loginFn(req, res));
-app.post("/createAccount", (req, res) => newUserFn(req, res));
+app.post("/createAccount", (req, res) => addUserFn(req, res));
 app.put("/update", (req, res) => updateUserFn(req, res));
-app.post("/createClub", (req, res) => newClubFn(req, res));
+app.post("/createClub", (req, res) => addClubFn(req, res));
 
 //Cambios en el front
-app.post("/addAllergyUser", (req, res) => allergyAggUFn(req, res));
+app.post("/addAllergyUser", (req, res) => addUserAllergyFn(req, res));
 app.post("/verifyUser", (req, res) => verifyUserFn(req, res));
 app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res));
+//app.post("/addAddressUser", (req, res) => addUserAddressFn(req, res));
+//app.post("/addMotorcycle", (req, res) => addMotorcycleFn(req, res));
+//app.put("/updateMotorcycle", (req, res) => updateMotorcycleFn(req, res));
+//app.post("/addAcompanante", (req, res) => addAcompananteFn(req, res));
+//app.put("/updateAcompanante", (req, res) => updateAcompananteFn(req, res));
+//app.post("/addAcompananteAllergy", (req, res) => addAcompananteAllergyFn(req, res));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
