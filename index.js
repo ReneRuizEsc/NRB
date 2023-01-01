@@ -59,7 +59,7 @@ const { verifyAdminFn } = require("./fn_queries/verifyAdminFile"); //idUsuario
 //const { updateMotorcycleFn } = require("./fn_queries/updateMotorcycleFile"); //marca, modelo, placas, foto, tarjetaCirculacion, idusuario
 //const { addAcompananteFn } = require("./fn_queries/addAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, numerotelefonico
 //const { updateAcompananteFn } = require("./fn_queries/updateAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico
-//const { addAcompananteAllergyFn } = require("./fn_queries/addAcompananteAllergyFile"); //usuario, alergia
+//const { addAcompananteAllergyFn } = require("./fn_queries/addAcompananteAllergyFile"); //usuario, alergia 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
