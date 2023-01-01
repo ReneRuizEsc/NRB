@@ -5,9 +5,10 @@ const loginFn = (req, res, client) => {
     const password = req.body.password;
   
     const queryStr = `
-      SELECT correo, nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idusuario, fechanac
+      SELECT correo, nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idusuario, fechanac, hasmembresia
       FROM usuario 
-      INNER JOIN cuenta ON idcuenta = idcuenta_fk AND Correo = $1 AND Contrasena = $2;
+      INNER JOIN cuenta ON idcuenta = idcuenta_fk AND Correo = $1 AND Contrasena = $2
+      ;
       `;
   
     client.query(
@@ -35,6 +36,32 @@ const loginFn = (req, res, client) => {
     );
 }
 
-module.exports = { loginFn }
+const membresiaFn = (req, res, client) => {
+  const usuario = req.body.idusuario;
+
+  const queryStr = `
+    SELECT fechaingreso, idclub_fk 
+    FROM miembro_club 
+    where idusuario_fk = $1
+    ;
+    `;
+
+  client.query(
+    queryStr,
+    [usuario],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.send({ error: err });
+      }
+
+      console.log('');
+      console.log(result)
+      res.send({ created: true})
+    }
+  );
+}
+
+module.exports = { loginFn, membresiaFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

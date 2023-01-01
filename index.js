@@ -87,7 +87,7 @@ const { verifyAdminFn } = require("./fn_queries/verifyAdminFile"); //idUsuario
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-//app.("/", (req, res) => (req, res)); Tampoco esta
+//app.("/", (req, res) => (req, res, client)); Tampoco esta
 
 app.post("/login", (req, res) => loginFn(req, res, client));
 app.post("/createAccount", (req, res) => addUserFn(req, res, client));
