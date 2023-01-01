@@ -1,23 +1,3 @@
-const Pool = require("pg").Pool;
-
-let client = null;
-
-const db = new Pool({
-  user: "goldkkme",
-  host: "peanut.db.elephantsql.com",
-  database: "goldkkme",
-  password: "FcXXaYxve6R_cjWWwod7xUv9FI-R99Cv",
-  port: 5432,
-});
-
-try {
-  db.connect(async (error, clnt, release) => {
-    client = clnt;
-  });
-} catch (error) {
-  console.log(error);
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////// 
 // Debe ser usuario verificado && No pertenece a algun club -> Queda asignado como presidente
 
@@ -25,7 +5,7 @@ try {
 // idUsuario_FK, idClub_FK, FechaIngreso, FechaRenovacion, SuscripcionMeses <- Miembro_Club
 // idMiembro_FK, 1 <- Cargos
 
-const addClubFn = (req, res) => {
+const addClubFn = (req, res, client) => {
     const idusuario = req.body.idusuario;
 
     const nombre = req.body.nombreClub;

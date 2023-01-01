@@ -1,7 +1,31 @@
 const express = require("express");
 const cors = require("cors");
+const Pool = require("pg").Pool;
 
 require("dotenv").config();
+
+
+/////// CONEXIÓN BASE DE DATOS ///////
+let client = null;
+
+const db = new Pool({
+  user: "goldkkme",
+  host: "peanut.db.elephantsql.com",
+  database: "goldkkme",
+  password: "FcXXaYxve6R_cjWWwod7xUv9FI-R99Cv",
+  port: 5432,
+});
+
+try {
+  db.connect(async (error, clnt, release) => {
+    client = clnt;
+  });
+} catch (error) {
+  console.log(error);
+}
+/////////////////////////////////////
+
+
 
 // Para las sesiones //
 const bodyParser = require("body-parser");
@@ -65,21 +89,21 @@ const { verifyAdminFn } = require("./fn_queries/verifyAdminFile"); //idUsuario
 
 //app.("/", (req, res) => (req, res)); Tampoco esta
 
-app.post("/login", (req, res) => loginFn(req, res));
-app.post("/createAccount", (req, res) => addUserFn(req, res));
-app.put("/update", (req, res) => updateUserFn(req, res));
-app.post("/createClub", (req, res) => addClubFn(req, res));
+app.post("/login", (req, res) => loginFn(req, res, client));
+app.post("/createAccount", (req, res) => addUserFn(req, res, client));
+app.put("/update", (req, res) => updateUserFn(req, res, client));
+app.post("/createClub", (req, res) => addClubFn(req, res, client));
 
 //Cambios en el front
-app.post("/addAllergyUser", (req, res) => addUserAllergyFn(req, res));
-app.post("/verifyUser", (req, res) => verifyUserFn(req, res));
-app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res));
-//app.post("/addAddressUser", (req, res) => addUserAddressFn(req, res));
-//app.post("/addMotorcycle", (req, res) => addMotorcycleFn(req, res));
-//app.put("/updateMotorcycle", (req, res) => updateMotorcycleFn(req, res));
-//app.post("/addAcompanante", (req, res) => addAcompananteFn(req, res));
-//app.put("/updateAcompanante", (req, res) => updateAcompananteFn(req, res));
-//app.post("/addAcompananteAllergy", (req, res) => addAcompananteAllergyFn(req, res));
+app.post("/addAllergyUser", (req, res) => addUserAllergyFn(req, res, client));
+app.post("/verifyUser", (req, res) => verifyUserFn(req, res, client));
+app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
+//app.post("/addAddressUser", (req, res) => addUserAddressFn(req, res, client));
+//app.post("/addMotorcycle", (req, res) => addMotorcycleFn(req, res, client));
+//app.put("/updateMotorcycle", (req, res) => updateMotorcycleFn(req, res, client));
+//app.post("/addAcompanante", (req, res) => addAcompananteFn(req, res, client));
+//app.put("/updateAcompanante", (req, res) => updateAcompananteFn(req, res, client));
+//app.post("/addAcompananteAllergy", (req, res) => addAcompananteAllergyFn(req, res, client));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
