@@ -84,6 +84,7 @@ const { verifyAdminFn } = require("./fn_queries/verifyAdminFile"); //idUsuario
 //const { addAcompananteFn } = require("./fn_queries/addAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, numerotelefonico
 //const { updateAcompananteFn } = require("./fn_queries/updateAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico
 //const { addAcompananteAllergyFn } = require("./fn_queries/addAcompananteAllergyFile"); //usuario, alergia 
+const { infoClubFm, miembrosClubFn } = require("./fn_queries/infoClubFile.js");
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -105,6 +106,8 @@ app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
 //app.put("/updateAcompanante", (req, res) => updateAcompananteFn(req, res, client));
 //app.post("/addAcompananteAllergy", (req, res) => addAcompananteAllergyFn(req, res, client));
 app.post("/loginInfoClub", (req, res) => membresiaFn(req, res, client));
+app.post("/infoClub", (req, res) => infoClubFm(req, res, client));
+app.post("/infoClubMembers", (req, res) => miembrosClubFn(req, res, client));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 

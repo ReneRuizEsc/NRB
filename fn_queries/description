@@ -17,10 +17,11 @@ Funciones:
 - Editar acompañante.[*]
 - Agregar alergia Acompañante.[*]
 - Eliminar cuenta.[]
+- Obtener información del club del usuario.[*]
 
 //Evento Individual
 - Crear evento individual.[]
-  - Agregar puntos de evento[]
+  - Agregar puntos de evento.[]
 - Editar información evento indicidual.[]
 - Borrar evento individual.[]
 
@@ -37,7 +38,7 @@ Funciones:
 
 //Clubes
 - Mostrar lista de clubes.[]
-- Mostrar información de club.[]
+- infoClubFile: Mostrar información de club.[*]
 - Solicitar unirse a club.[]
 - Unirse a club.[]
 - newClubFile: Crear club.[*] -- Falta ser usuario verificado && No pertenece a algun club
