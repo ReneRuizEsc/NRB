@@ -40,9 +40,8 @@ const membresiaFn = (req, res, client) => {
   const usuario = req.body.idusuario;
 
   const queryStr = `
-    SELECT fechaingreso, idclub_fk 
-    FROM miembro_club 
-    where idusuario_fk = $1
+  select nombre, reglamento, presentacion, fechaingreso from miembro_club
+  INNER JOIN club on idclub = idclub_fk and idusuario_fk =1;
     ;
     `;
 

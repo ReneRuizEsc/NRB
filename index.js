@@ -69,7 +69,7 @@ app.use(
 
 //const {  } = require("./fn_queries/"); No borres esta wea
 
-const { loginFn } = require("./fn_queries/loginFile"); //email, password
+const { loginFn, membresiaFn } = require("./fn_queries/loginFile"); //email, password
 const { addUserFn } = require("./fn_queries/addUserFile"); //email, username, name, ap, am, phone, birthDate, password
 const { updateUserFn } = require("./fn_queries/updateUserFile"); //email, username, name, apellido1, apellido2, phone, tipodesangre
 
@@ -104,6 +104,7 @@ app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
 //app.post("/addAcompanante", (req, res) => addAcompananteFn(req, res, client));
 //app.put("/updateAcompanante", (req, res) => updateAcompananteFn(req, res, client));
 //app.post("/addAcompananteAllergy", (req, res) => addAcompananteAllergyFn(req, res, client));
+app.post("/loginInfoClub", (req, res) => membresiaFn(req, res, client));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
