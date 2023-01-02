@@ -69,7 +69,7 @@ app.use(
 
 //const {  } = require("./fn_queries/"); No borres esta wea
 
-const { loginFn, membresiaFn } = require("./fn_queries/loginFile"); //email, password
+const { loginFn } = require("./fn_queries/loginFile"); //email, password
 const { addUserFn } = require("./fn_queries/addUserFile"); //email, username, name, ap, am, phone, birthDate, password
 const { updateUserFn } = require("./fn_queries/updateUserFile"); //email, username, name, apellido1, apellido2, phone, tipodesangre
 
@@ -84,7 +84,7 @@ const { verifyAdminFn } = require("./fn_queries/verifyAdminFile"); //idUsuario
 //const { addAcompananteFn } = require("./fn_queries/addAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, numerotelefonico
 //const { updateAcompananteFn } = require("./fn_queries/updateAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico
 //const { addAcompananteAllergyFn } = require("./fn_queries/addAcompananteAllergyFile"); //usuario, alergia 
-const { infoClubFm, miembrosClubFn } = require("./fn_queries/infoClubFile.js");
+const { infoClubClubFn, infoUserClubFn, miembrosClubFn } = require("./fn_queries/infoClubFile.js");
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -106,7 +106,8 @@ app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
 //app.put("/updateAcompanante", (req, res) => updateAcompananteFn(req, res, client));
 //app.post("/addAcompananteAllergy", (req, res) => addAcompananteAllergyFn(req, res, client));
 app.post("/loginInfoClub", (req, res) => membresiaFn(req, res, client));
-app.post("/infoClub", (req, res) => infoClubFm(req, res, client));
+app.post("/infoClubClub", (req, res) => infoClubClubFn(req, res, client));
+app.post("/infoUserClub", (req, res) => infoUserClubFn(req, res, client));
 app.post("/infoClubMembers", (req, res) => miembrosClubFn(req, res, client));
 
 ////////////////////////////////////////////////////////////////////////////////////////////

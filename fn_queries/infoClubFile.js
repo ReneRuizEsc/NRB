@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////// 
 
-const infoClubFm = (req, res, client) => {
+const infoClubClubFn = (req, res, client) => {
     const idclub = req.body.idclub;
   
     const queryStr = `
@@ -14,6 +14,38 @@ const infoClubFm = (req, res, client) => {
       //"SELECT Correo FROM Cuenta_Usuario WHERE Correo = $1 AND Contrasena = $2"
       queryStr,
       [idclub],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({ error: err }); //funciona como return
+          //return;
+        }
+  
+        if (result.rows.length > 0) {
+          res.send(result.rows[0]);
+        } else {
+          res.send({ message: "" });
+          console.log(result);
+        }
+      }
+    );
+}
+
+const infoUserClubFn = (req, res, client) => {
+    const user = req.body.idusuario;
+  
+    const queryStr = `
+
+    select * from miembro_club
+    INNER JOIN club on idclub = miembro_club.idclub_fk 
+    INNER JOIN direccion_club on direccion_club.idclub_fk = miembro_club.idclub_fk
+    INNER JOIN colores_club on colores_club.idclub_fk = miembro_club.idclub_fk and idusuario_fk = $1
+      `;
+  
+    client.query(
+      //"SELECT Correo FROM Cuenta_Usuario WHERE Correo = $1 AND Contrasena = $2"
+      queryStr,
+      [user],
       (err, result) => {
         if (err) {
           console.log(err);
@@ -62,6 +94,6 @@ const miembrosClubFn = (req, res, client) => {
     );
 }
 
-module.exports = { infoClubFm, miembrosClubFn}
+module.exports = { infoClubClubFn, infoUserClubFn, miembrosClubFn}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
