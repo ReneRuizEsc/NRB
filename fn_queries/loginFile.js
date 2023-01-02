@@ -41,7 +41,7 @@ const membresiaFn = (req, res, client) => {
 
   const queryStr = `
   select nombre, reglamento, presentacion, fechaingreso from miembro_club
-  INNER JOIN club on idclub = idclub_fk and idusuario_fk =1;
+  INNER JOIN club on idclub = idclub_fk and idusuario_fk = $1;
     ;
     `;
 
@@ -56,7 +56,7 @@ const membresiaFn = (req, res, client) => {
 
       console.log('');
       console.log(result)
-      res.send({ created: true})
+      res.send(result.rows[0])
     }
   );
 }
