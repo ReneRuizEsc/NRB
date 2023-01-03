@@ -69,49 +69,72 @@ app.use(
 
 //const {  } = require("./fn_queries/"); No borres esta wea
 
-const { loginFn } = require("./fn_queries/loginFile"); //email, password
-const { addUserFn } = require("./fn_queries/addUserFile"); //email, username, name, ap, am, phone, birthDate, password
-const { updateUserFn, updateContrasenaFn } = require("./fn_queries/updateUserFile"); //email, username, name, apellido1, apellido2, phone, tipodesangre
-
-//Faltan por poner en front
-const { addClubFn } = require("./fn_queries/addClubFile"); //idUsuario, nombreClub, reglamento(archivo), presentacion
-const { addUserAllergyFn } = require("./fn_queries/addUserAllergy"); //idUsuario, alergia
-const { verifyUserFn } = require("./fn_queries/verifyUserFile"); //idUsuario, fotofrontal, fototrasera, fotorostro
-const { verifyAdminFn } = require("./fn_queries/verifyAdminFile"); //idUsuario
-//const { addUserAddressFn } = require("./fn_queries/addUserAddressFile"); //idUsuario, pais, estado, municipio, colonia, calle, numero
-//const { addMotorcycleFn } = require("./fn_queries/addMotorcycleFile"); //marca, modelo, placas, foto, tarjetaCirculacion, idusuario
-//const { updateMotorcycleFn } = require("./fn_queries/updateMotorcycleFile"); //marca, modelo, placas, foto, tarjetaCirculacion, idusuario
-//const { addAcompananteFn } = require("./fn_queries/addAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, numerotelefonico
-//const { updateAcompananteFn } = require("./fn_queries/updateAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico
-//const { addAcompananteAllergyFn } = require("./fn_queries/addAcompananteAllergyFile"); //usuario, alergia 
-const { infoClubClubFn, infoUserClubFn, miembrosClubFn } = require("./fn_queries/infoClubFile.js");
-const { newMemberClubFn } = require("./fn_queries/newClubMemberFile.js"); //idusuario, idclub
+const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn } = require("./fn_queries/clubFile");
+const { loginFn } = require("./fn_queries/loginFile");
+const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn } = require("./fn_queries/membersFile");
+const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn } = require("./fn_queries/otherFunctionsFile");
+const { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionAllergyFn, deleteCompanionAllergyFn, showCompanionAllergyFn } = require("./fn_queries/userCompanionFile");
+const { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserAllergyFn, deleteUserAllergyFn, showUserAllergyFn } = require("./fn_queries/userDataFile");
+const { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn } = require("./fn_queries/userFile");
+const { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn } = require("./fn_queries/userMotorcycleFile");
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 //app.("/", (req, res) => (req, res, client)); Tampoco esta
 
-app.post("/login", (req, res) => loginFn(req, res, client));
-app.post("/createAccount", (req, res) => addUserFn(req, res, client));
-app.put("/update", (req, res) => updateUserFn(req, res, client));
-app.post("/createClub", (req, res) => addClubFn(req, res, client));
+//Login
+app.post("/login", (req, res) => loginFn(req, res, client)); //email, password
 
-//Cambios en el front
-app.post("/addAllergyUser", (req, res) => addUserAllergyFn(req, res, client));
+//Others { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
+app.post("/verifyUser", (req, res) => verifyStatusFn(req, res, client));
 app.post("/verifyUser", (req, res) => verifyUserFn(req, res, client));
 app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
-//app.post("/addAddressUser", (req, res) => addUserAddressFn(req, res, client));
-//app.post("/addMotorcycle", (req, res) => addMotorcycleFn(req, res, client));
-//app.put("/updateMotorcycle", (req, res) => updateMotorcycleFn(req, res, client));
-//app.post("/addAcompanante", (req, res) => addAcompananteFn(req, res, client));
-//app.put("/updateAcompanante", (req, res) => updateAcompananteFn(req, res, client));
-//app.post("/addAcompananteAllergy", (req, res) => addAcompananteAllergyFn(req, res, client));
-app.post("/loginInfoClub", (req, res) => membresiaFn(req, res, client));
-app.post("/infoClubClub", (req, res) => infoClubClubFn(req, res, client));
-app.post("/infoUserClub", (req, res) => infoUserClubFn(req, res, client));
-app.post("/infoClubMembers", (req, res) => miembrosClubFn(req, res, client));
-app.post("/newClubMember", (req, res) => newMemberClubFn(req, res, client));
+app.put("/verifyAdmin", (req, res) => notVerifyAdminFn(req, res, client));
+app.put("/pendingVerification", (req, res) => showPendingVerificationFn(req, res, client));
+
+//Club { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn }
+app.post("/createClub", (req, res) => addClubFn(req, res, client));
+app.put("/updateClub", (req, res) => updateClubFn(req, res, client));
+app.post("/delteClub", (req, res) => deleteClubFn(req, res, client));
+app.post("/showClubClub", (req, res) => showClubClubFn(req, res, client));
+app.post("/showUserClub", (req, res) => showUserClubFn(req, res, client));
+
+//Members { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn }
+app.post("/infoUserClub", (req, res) => newMemberClubFn(req, res, client));
+app.post("/infoClubClub", (req, res) => newMemberClubAcceptFn(req, res, client));
+app.post("/infoClubClub", (req, res) => newMemberClubRejectFn(req, res, client));
+app.post("/infoClubMembers", (req, res) => showMiembrosClubFn(req, res, client));
+
+//UserCompanion { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionAllergyFn, deleteCompanionAllergyFn, showCompanionAllergyFn }
+app.post("/addAcompanante", (req, res) => addUserCompanionFn(req, res, client));
+app.put("/updateAcompanante", (req, res) => updateUserCompanionFn(req, res, client));
+app.post("/deleteAcompanante", (req, res) => deleteUserCompanionFn(req, res, client));
+app.post("/showAcompananteInfo", (req, res) => showUserCompanionFn(req, res, client));
+app.post("/addAcompananteAllergy", (req, res) => addCompanionAllergyFn(req, res, client));
+app.post("/deleteAcompananteAllergy", (req, res) => deleteCompanionAllergyFn(req, res, client));
+app.post("/showAcompananteAllergy", (req, res) => showCompanionAllergyFn(req, res, client));
+
+//UserData { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserAllergyFn, deleteUserAllergyFn, showUserAllergyFn }
+app.post("/addAddressUser", (req, res) => addUserAddressFn(req, res, client));
+app.put("/updateUserAddress", (req, res) => updateUserAddressFn(req, res, client));
+app.post("/deleteUserAddress", (req, res) => deleteUserAddressFn(req, res, client));
+app.post("/showUserAddress", (req, res) => showUserAddressFn(req, res, client));
+app.post("/addAllergyUser", (req, res) => addUserAllergyFn(req, res, client));
+app.post("/deleteUserAllergy", (req, res) => deleteUserAllergyFn(req, res, client));
+app.post("/showUserAllergy", (req, res) => showUserAllergyFn(req, res, client));
+
+//User { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn }
+app.post("/createAccount", (req, res) => addUserFn(req, res, client));
+app.put("/update", (req, res) => updateUserFn(req, res, client));
+app.post("/deleteUser", (req, res) => deleteUserFn(req, res, client));
+app.post("/showUser", (req, res) => showUserFn(req, res, client));
 app.put("/updateContrasena", (req, res) => updateContrasenaFn(req, res, client));
+
+//Motorcycle { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn }
+app.post("/addMotorcycle", (req, res) => addUserMotorcycleFn(req, res, client));
+app.put("/updateMotorcycle", (req, res) => updateUserMotorcycleFn(req, res, client));
+app.post("/deletemotorcycle", (req, res) => deleteUserMotorcycleFn(req, res, client));
+app.post("/showMotorcycleInfo", (req, res) => showUserMotorcycleFn(req, res, client));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
