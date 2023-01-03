@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-//Club add, update, delete, show(User), show(Club)
+//Club add, update, delete, show(User), show(Club) || Club address update
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -16,32 +16,36 @@ const addClubFn = (req, res, client) => {
     //Esto queda sin usar
     const mesesSuscripcion = 0;
     //El creador del club no tiene membresía
-    const fechaRenovacion = new Date("12-31-2099");
-
-    //Fecha de ingreso el día de creación del club
-    const date = new Date();
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear();
-    const fechaIngreso = `${month}-${day}-${year}`;
+    const fechaRenovacion = new Date("2099-12-31");
 
     // 1: Presidente, 2: Vicepresidente, 3: Sargento de armas, 4: Tesorero
     // 5: Capitan de ruta, 6: Prospect, 7: Miembro; 8: Enforcer (Sin uso en la plataforma)
     const cargo = 1;
+
+    const pais = req.body.pais;
+    const estado = req.body.estado;
+    const municipio = req.body.municipio;
+    const colonia = req.body.colonia;
+    const calle = req.body.calle;
+    const numero = req.body.numero;
+    const direccionLat = req.body.direccionLat;
+    const direccionLong = req.body.direccionLong;
   
       let query = `
       with first_insert as (
-        insert into club( nombre, reglamento, presentacion) 
+        INSERT INTO club( nombre, reglamento, presentacion) 
         values ($1, $2, $3) RETURNING idClub),
-      second_insert as (insert into Miembro_Club (SuscripcionMeses, FechaRenovacion, FechaIngreso, idClub_FK, idUsuario_FK) 
-        values ($4, $6, $7, (select idClub from first_insert), $8) RETURNING idMembresia)
-        insert into cargos(idMiembro_FK, Cargo_FK)
-        values ((select idMembresia from second_insert), $9)
+      second_insert as (INSERT INTO Miembro_Club (SuscripcionMeses, FechaRenovacion, FechaIngreso, idClub_FK, idUsuario_FK) 
+        values ($4, $6, (SELECT current_date)), (select idClub from first_insert), $7) RETURNING idMembresia),
+      third_insert as (INSERT INTO cargos(idMiembro_FK, Cargo_FK)
+        values ((select idMembresia from second_insert), $8))
+        INSERT INTO direccion_club (pais, estado, municipio, colonia, calle, numero, direccionlat, direccionlong, idclub_fk)
+        VALUES ($9, $10, $11, $12, $13, $14, $15, $16, (select idClub from first_insert))
         ;`
 
       client.query(
         query,
-        [nombre, reglamento, presentacion, mesesSuscripcion, fechaRenovacion, fechaIngreso, idusuario, cargo],
+        [nombre, reglamento, presentacion, mesesSuscripcion, fechaRenovacion, idusuario, cargo, pais, estado, municipio, colonia, calle, numero, direccionLat, direccionLat],
         (err, result) => {
           if (err)
           {
