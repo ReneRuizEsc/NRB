@@ -30,22 +30,32 @@ const addClubFn = (req, res, client) => {
     const numero = req.body.numero;
     const direccionLat = req.body.direccionLat;
     const direccionLong = req.body.direccionLong;
+
+    const logo = req.body.logo;
+    const logo_ubicacion = req.logoUbicacion;
+    const logo_nombre_club = req.body.logoNombreClub;
   
       let query = `
       with first_insert as (
         INSERT INTO club( nombre, reglamento, presentacion) 
         values ($1, $2, $3) RETURNING idClub),
+		
       second_insert as (INSERT INTO Miembro_Club (SuscripcionMeses, FechaRenovacion, FechaIngreso, idClub_FK, idUsuario_FK) 
-        values ($4, $6, (SELECT current_date)), (select idClub from first_insert), $7) RETURNING idMembresia),
+        values ($4, $6, (SELECT current_date), (select idClub from first_insert), $7) RETURNING idMembresia),
+		
       third_insert as (INSERT INTO cargos(idMiembro_FK, Cargo_FK)
-        values ((select idMembresia from second_insert), $8))
-        INSERT INTO direccion_club (pais, estado, municipio, colonia, calle, numero, direccionlat, direccionlong, idclub_fk)
-        VALUES ($9, $10, $11, $12, $13, $14, $15, $16, (select idClub from first_insert))
+        values ((select idMembresia from second_insert), $8)),
+		
+      fourth_insert as( INSERT INTO direccion_club (pais, estado, municipio, colonia, calle, numero, direccionlat, direccionlong, idclub_fk)
+        VALUES ($9, $10, $11, $12, $13, $14, $15, $16, (select idClub from first_insert)))
+		
+        INSERT INTO colores_club (idlclub_fk, logo, logo_ubicacion, logo_nombre_club)
+        VALUES ((select idClub from first_insert), $17, $18, $19)
         ;`
 
       client.query(
         query,
-        [nombre, reglamento, presentacion, mesesSuscripcion, fechaRenovacion, idusuario, cargo, pais, estado, municipio, colonia, calle, numero, direccionLat, direccionLat],
+        [nombre, reglamento, presentacion, mesesSuscripcion, fechaRenovacion, idusuario, cargo, pais, estado, municipio, colonia, calle, numero, direccionLat, direccionLong, logo, logo_ubicacion, logo_nombre_club],
         (err, result) => {
           if (err)
           {
