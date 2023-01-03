@@ -1,12 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////////////////////////
 
 const addUserAllergyFn = (req, res, client) => {
     const usuario = req.body.idusuario;
     const alergia = req.body.alergia;
     
     const queryStr = `
-    insert into u_alergia (idusuario_fk, alergia)
-    values ($1, $2)
+        INSERT INTO u_alergia (idusuario_fk, alergia)
+        values ($1, $2)
         ;`
     
     client.query(
@@ -16,10 +16,10 @@ const addUserAllergyFn = (req, res, client) => {
         if (err)
         {
             console.log(err);
-            res.send({ error: 'Ya está registrada esa alergia' });
+            res.send({ error: 'No fue registrada la alergia' });
             return;
         }
-        console.log('From register allergy: ');
+        console.log('Alergia de usuario anadida');
         console.log(result)
         res.send({ created: true})
         }

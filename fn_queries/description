@@ -1,14 +1,15 @@
 Funciones:
 
 //Otras 
-- loginFile: Iniciar sesión.[*] email, password
-- Cerrar sesión.[]
+- loginFile: Iniciar sesión.[*]
+- Cerrar sesión.[*]
 
 //Usuario
-- newUserFile: Registrar Usuario.[*]
-- Agregar dirección de usuario.[*]
+- addUserFile: Registrar Usuario.[*]
+- addUserAddressFile: Agregar dirección de usuario.[*]
 - updateUserFile: Modificar perfil Usuario.[*]
-- newAllergyUFile: Agregar alergias Usuario.[*]
+- updateUserFile: Modificar contrasena [*].
+- addUserAllergyFile: Agregar alergias Usuario.[*]
 - verifyUserFile: Verificar perfil.[*] -- El usuario manda las fotos
 - verifyAdminFile: Verificar perfil.[*] -- Si se invoca se pone en true la verificacion
 - Agregar motocicleta.[*]

@@ -71,7 +71,7 @@ app.use(
 
 const { loginFn } = require("./fn_queries/loginFile"); //email, password
 const { addUserFn } = require("./fn_queries/addUserFile"); //email, username, name, ap, am, phone, birthDate, password
-const { updateUserFn } = require("./fn_queries/updateUserFile"); //email, username, name, apellido1, apellido2, phone, tipodesangre
+const { updateUserFn, updateContrasenaFn } = require("./fn_queries/updateUserFile"); //email, username, name, apellido1, apellido2, phone, tipodesangre
 
 //Faltan por poner en front
 const { addClubFn } = require("./fn_queries/addClubFile"); //idUsuario, nombreClub, reglamento(archivo), presentacion
@@ -85,6 +85,7 @@ const { verifyAdminFn } = require("./fn_queries/verifyAdminFile"); //idUsuario
 //const { updateAcompananteFn } = require("./fn_queries/updateAcompananteFile"); //idusuario, nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico
 //const { addAcompananteAllergyFn } = require("./fn_queries/addAcompananteAllergyFile"); //usuario, alergia 
 const { infoClubClubFn, infoUserClubFn, miembrosClubFn } = require("./fn_queries/infoClubFile.js");
+const { newMemberClubFn } = require("./fn_queries/newClubMemberFile.js"); //idusuario, idclub
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -109,6 +110,8 @@ app.post("/loginInfoClub", (req, res) => membresiaFn(req, res, client));
 app.post("/infoClubClub", (req, res) => infoClubClubFn(req, res, client));
 app.post("/infoUserClub", (req, res) => infoUserClubFn(req, res, client));
 app.post("/infoClubMembers", (req, res) => miembrosClubFn(req, res, client));
+app.post("/newClubMember", (req, res) => newMemberClubFn(req, res, client));
+app.put("/updateContrasena", (req, res) => updateContrasenaFn(req, res, client));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 

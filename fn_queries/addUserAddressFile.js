@@ -1,26 +1,8 @@
-const Pool = require("pg").Pool;
-
-let client = null;
-
-const db = new Pool({
-  user: "goldkkme",
-  host: "peanut.db.elephantsql.com",
-  database: "goldkkme",
-  password: "FcXXaYxve6R_cjWWwod7xUv9FI-R99Cv",
-  port: 5432,
-});
-
-try {
-  db.connect(async (error, clnt, release) => {
-    client = clnt;
-  });
-} catch (error) {
-  console.log(error);
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////// 
 
-const addUserAddressFn = (req, res) => {
+// Insert into direccion_usuario
+
+const addUserAddressFn = (req, res, client) => {
     const usuario = req.body.idusuario;
     const pais = req.body.pais;
     const estado = req.body.estado;
@@ -41,10 +23,10 @@ const addUserAddressFn = (req, res) => {
         if (err)
         {
             console.log(err);
-            res.send({ error: 'Ups' });
+            res.send({ error: 'No fue añadida la direccion' });
             return;
         }
-        console.log('From verification: ');
+        console.log('Direccion añadida');
         console.log(result)
         res.send({ created: true})
         }
