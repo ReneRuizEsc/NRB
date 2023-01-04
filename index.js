@@ -139,9 +139,6 @@ app.put("/update", (req, res) => updateUserFn(req, res, client));
 app.post("/deleteUser", (req, res) => deleteUserFn(req, res, client));
 app.post("/showUser", (req, res) => showUserFn(req, res, client));
 app.put("/updateContrasena", (req, res) => updateContrasenaFn(req, res, client));
-    // UPLOAD
-app.post("/uploadProfilePic", (req, res) => uploadProfilePic(req, res));
-
 
 //Motorcycle { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn }
 app.post("/addMotorcycle", (req, res) => addUserMotorcycleFn(req, res, client));
@@ -156,6 +153,9 @@ app.post("/deleteUserEvent", (req, res) => deleteUserEventFn(req, res, client));
 app.post("/showUserEventList", (req, res) => showUserEventListFn(req, res, client));
 app.post("/showUserEventEvent", (req, res) => showUserEventEventFn(req, res, client));
 app.post("/showUserEventPoints", (req, res) => showUserEventPointsFn(req, res, client));
+
+//UPLOAD
+app.post("/uploadProfilePic", (req, res) => uploadProfilePic(req, res, client));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
