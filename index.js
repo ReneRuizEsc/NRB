@@ -69,7 +69,7 @@ app.use(
 
 //const {  } = require("./fn_queries/"); No borres esta wea
 
-const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn } = require("./fn_queries/clubFile");
+const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn } = require("./fn_queries/clubFile");
 const { loginFn } = require("./fn_queries/loginFile");
 const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn } = require("./fn_queries/membersFile");
 const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn } = require("./fn_queries/otherFunctionsFile");
@@ -92,12 +92,13 @@ app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
 app.put("/verifyAdmin", (req, res) => notVerifyAdminFn(req, res, client));
 app.put("/pendingVerification", (req, res) => showPendingVerificationFn(req, res, client));
 
-//Club { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn }
+//Club { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn }
 app.post("/createClub", (req, res) => addClubFn(req, res, client));
 app.put("/updateClub", (req, res) => updateClubFn(req, res, client));
 app.post("/delteClub", (req, res) => deleteClubFn(req, res, client));
 app.post("/showClubClub", (req, res) => showClubClubFn(req, res, client));
 app.post("/showUserClub", (req, res) => showUserClubFn(req, res, client));
+app.put("/updateClubAddress", (req, res) => updateClubAddressFn(req, res, client));
 
 //Members { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn }
 app.post("/infoUserClub", (req, res) => newMemberClubFn(req, res, client));

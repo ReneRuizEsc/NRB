@@ -41,16 +41,16 @@ const addClubFn = (req, res, client) => {
         values ($1, $2, $3) RETURNING idClub),
 		
       second_insert as (INSERT INTO Miembro_Club (SuscripcionMeses, FechaRenovacion, FechaIngreso, idClub_FK, idUsuario_FK) 
-        values ($4, $6, (SELECT current_date), (select idClub from first_insert), $7) RETURNING idMembresia),
+        values ($4, $5, (SELECT current_date), (select idClub from first_insert), $6) RETURNING idMembresia),
 		
       third_insert as (INSERT INTO cargos(idMiembro_FK, Cargo_FK)
-        values ((select idMembresia from second_insert), $8)),
+        values ((select idMembresia from second_insert), $7)),
 		
       fourth_insert as( INSERT INTO direccion_club (pais, estado, municipio, colonia, calle, numero, direccionlat, direccionlong, idclub_fk)
-        VALUES ($9, $10, $11, $12, $13, $14, $15, $16, (select idClub from first_insert)))
+        VALUES ($8, $9, $10, $11, $12, $13, $14, $15, (select idClub from first_insert)))
 		
-        INSERT INTO colores_club (idlclub_fk, logo, logo_ubicacion, logo_nombre_club)
-        VALUES ((select idClub from first_insert), $17, $18, $19)
+        INSERT INTO colores_club (idclub_fk, logo, logo_ubicacion, logo_nombre_club)
+        VALUES ((select idClub from first_insert), $16, $17, $18)
         ;`
 
       client.query(
@@ -79,7 +79,8 @@ const addClubFn = (req, res, client) => {
     const reglamento = req.body.reglamento;
     const presentacion = req.body.presentacion;
   
-      let query = `UPDATE Club
+      let query = `
+        UPDATE Club
         SET nombre = $1,
         reglamento = $2,
         presentacion = $3
@@ -175,11 +176,11 @@ const showUserClubFn = (req, res, client) => {
     const user = req.body.idusuario;
   
     const queryStr = `
-    select * from miembro_club
-    INNER JOIN club on idclub = miembro_club.idclub_fk 
-    INNER JOIN direccion_club on direccion_club.idclub_fk = miembro_club.idclub_fk
-    INNER JOIN colores_club on colores_club.idclub_fk = miembro_club.idclub_fk and idusuario_fk = $1
-      `;
+      select * from miembro_club
+      INNER JOIN club on idclub = miembro_club.idclub_fk 
+      INNER JOIN direccion_club on direccion_club.idclub_fk = miembro_club.idclub_fk
+      INNER JOIN colores_club on colores_club.idclub_fk = miembro_club.idclub_fk and idusuario_fk = $1
+      ;`
   
     client.query(
       queryStr,
@@ -206,6 +207,45 @@ const showUserClubFn = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn }
+// idUser = all info of direccion_club, colores_club, club.
+
+const updateClubAddressFn = (req, res, client) => {
+  const idclub = req.body.idclub;
+  const logo = req.body.logo;
+  const logo_ubicacion = req.logoUbicacion;
+  const logo_nombre_club = req.body.logoNombreClub;
+
+  const queryStr = `
+        UPDATE colores_club
+        SET logo = $1,
+        logo_ubicacion = $2,
+        logo_nombre_club = $3
+        where idclub_fk = $4
+      ;`
+
+  client.query(
+    queryStr,
+    [logo, logo_ubicacion, logo_nombre_club, idclub],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        res.send({ error: err });
+      }
+
+      if (result.rows.length > 0)
+      {
+        res.send(result.rows[0]);
+      }
+      else
+      {
+        res.send({ message: "" });
+        console.log(result);
+      }
+    }
+  );
+}
+
+module.exports = { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
