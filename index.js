@@ -76,7 +76,7 @@ app.use(fileUpload({
 
 //const {  } = require("./fn_queries/"); No borres esta wea
 
-const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn } = require("./fn_queries/clubFile");
+const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn, showClubListFn } = require("./fn_queries/clubFile");
 const { loginFn } = require("./fn_queries/loginFile");
 const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn } = require("./fn_queries/membersFile");
 const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn } = require("./fn_queries/otherFunctionsFile");
