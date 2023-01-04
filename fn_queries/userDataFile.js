@@ -7,6 +7,7 @@
 // Insert into direccion_usuario
 
 const addUserAddressFn = (req, res, client) => {
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';
     const usuario = req.body.idusuario;
     const pais = req.body.pais;
     const estado = req.body.estado;
@@ -17,12 +18,12 @@ const addUserAddressFn = (req, res, client) => {
     
     const queryStr = `
         INSERT INTO direccion_usuario (idusuario_fk, pais, estado, municipio, colonia, calle, numero)
-        values ($1, $2, $3, $4, $5, $6, $7)
+        values ($1, $2, $3, $4, pgp_sym_encrypt( $5, $8), pgp_sym_encrypt( $6, $8), pgp_sym_encrypt( $7, $8))
         ;`
     
     client.query(
         queryStr,
-        [usuario, pais, estado, municipio, colonia, calle, numero],
+        [usuario, pais, estado, municipio, colonia, calle, numero, key],
         (err, result) => {
         if (err)
         {
@@ -42,6 +43,7 @@ const addUserAddressFn = (req, res, client) => {
 //Update direccion info
 
 const updateUserAddressFn = (req, res, client) => {
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';//pgp_sym_encrypt( $3, $7)
     const usuario = req.body.idusuario;
     const pais = req.body.pais;
     const estado = req.body.estado;
@@ -55,15 +57,15 @@ const updateUserAddressFn = (req, res, client) => {
         SET pais = $1,
         estado = $2,
         municipio = $3,
-        colonia = $4,
-        calle = $5,
-        numero = $6
+        colonia = pgp_sym_encrypt( $4, $8),
+        calle = pgp_sym_encrypt( $5, $8),
+        numero = pgp_sym_encrypt( $6, $8)
         WHERE idusuario_fk = $7
         ;`
     
     client.query(
         queryStr,
-        [pais, estado, municipio, colonia, calle, numero, usuario],
+        [pais, estado, municipio, colonia, calle, numero, usuario, key],
         (err, result) => {
         if (err)
         {
@@ -112,16 +114,21 @@ const deleteUserAddressFn = (req, res, client) => {
 // Insert into direccion_usuario
 
 const showUserAddressFn = (req, res, client) => {
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';//pgp_sym_encrypt( $3, $7)
     const usuario = req.body.idusuario;
     
     const queryStr = `
-        SELECT * FROM direccion_usuario
+        SELECT pais, estado, municipio,
+        pgp_sym_decrypt(colonia::bytea, $2) as colonia
+        pgp_sym_decrypt(calle::bytea, $2) as calle
+        pgp_sym_decrypt(numero::bytea, $2) as numero
+        FROM direccion_usuario
         WHERE idusuario_fk = $1
         ;`
     
     client.query(
         queryStr,
-        [usuario],
+        [usuario, key],
         (err, result) => {
         if (err)
         {

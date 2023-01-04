@@ -7,6 +7,7 @@
 //Use this to register new companion
 
 const addUserCompanionFn = (req, res, client) => {
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';
     const usuario = req.body.idusuario;
     const nombre = req.body.nombre;
     const ap = req.body.ap;
@@ -18,12 +19,12 @@ const addUserCompanionFn = (req, res, client) => {
     
     const queryStr = `
         INSERT into acompanate (idusuario_fk, nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico)
-        values ($1, $2, $3, $4, $5, $6, $7, $8)
+        values ($1, $2, pgp_sym_encrypt( $3, $9), pgp_sym_encrypt( $4, $9), $5, $6, pgp_sym_encrypt( $7, $9), pgp_sym_encrypt( $8, $9))
         ;`
     
     client.query(
         queryStr,
-        [usuario, nombre, ap, am, apodo, fotoperfil, tiposangre, numerotelefonico],
+        [usuario, nombre, ap, am, apodo, fotoperfil, tiposangre, numerotelefonico, key],
         (err, result) => {
         if (err)
         {
@@ -43,6 +44,7 @@ const addUserCompanionFn = (req, res, client) => {
 //Alter companion data
 
 const updateUserCompanionFn = (req, res, client) => {
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';
     const usuario = req.body.idusuario;
     const nombre = req.body.nombre;
     const ap = req.body.ap;
@@ -55,18 +57,18 @@ const updateUserCompanionFn = (req, res, client) => {
     const queryStr = `
         UPDATE acompanante
         SET nombre = $1,
-            ap = $2,
-            am = $3,
+            ap = pgp_sym_encrypt( $2, $9),
+            am = pgp_sym_encrypt( $3, $9),
             apodo = $4,
             fotoperfil = $5,
-            tipodesangre = $6,
-            numerotelefonico = $7
+            tipodesangre = pgp_sym_encrypt( $6, $9),
+            numerotelefonico = pgp_sym_encrypt( $7, $9)
         WHERE idusuario_fk = $8
         ;`
     
     client.query(
         queryStr,
-        [nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico, usuario],
+        [nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico, usuario, key],
         (err, result) => {
         if (err)
         {
@@ -115,16 +117,22 @@ const deleteUserCompanionFn = (req, res, client) => {
 //Show all data from companion
 
 const showUserCompanionFn = (req, res, client) => {
-  const usuario = req.body.idusuario;
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';
+    const usuario = req.body.idusuario;
   
-  const queryStr = `
-        SELECT * from acompanante
+    const queryStr = `
+        SELECT idusuario_fk, nombre,
+        pgp_sym_decrypt(ap::bytea, $2) as ap
+        pgp_sym_decrypt(am::bytea, $2) as am
+        apodo, fotoperfil,
+        pgp_sym_decrypt(tipodesangre::bytea, $2) as tipodesangre
+        pgp_sym_decrypt(numerotelefonico::bytea, $2) as numerotelefonico from acompanante
         WHERE idusuario_fk = $1
         ;`
   
-  client.query(
+    client.query(
       queryStr,
-      [usuario],
+      [usuario, key],
       (err, result) => {
       if (err)
       {

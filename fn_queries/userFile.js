@@ -7,6 +7,7 @@
 //Use to register new users
 
 const addUserFn = (req, res, client) => {
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';//pgp_sym_encrypt( $3, $7)
     const email = req.body.email;
     const password = req.body.password;
     const name = req.body.name;
@@ -23,12 +24,12 @@ const addUserFn = (req, res, client) => {
       with first_insert as (insert into cuenta(correo, contrasena) 
         values($1, $2) RETURNING idcuenta) 
         insert into usuario( nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idcuenta_fk, fechanac, hasmembresia) 
-        values ( $3, $4, $5, $6, $7, $8, $9, (select idcuenta from first_insert), $10, $11)
+        values ( $3, pgp_sym_encrypt( $4, $12), pgp_sym_encrypt( $5, $12), $6, $7, $pgp_sym_encrypt( $8, $12), pgp_sym_encrypt( $9, $12), (select idcuenta from first_insert), $10, $11)
         ;`
     
     client.query(
         queryStr,
-        [email, password, name, ap, am, username, fotoperfil, phone, tiposangre, birthDate, membresia],
+        [email, password, name, ap, am, username, fotoperfil, phone, tiposangre, birthDate, membresia, key],
         (err, result) => {
         if (err)
         {
@@ -48,25 +49,26 @@ const addUserFn = (req, res, client) => {
 //Use to change user info
 
 const updateUserFn = (req, res, client) => {
-      const email = req.body.email;
-      const username = req.body.username;
-      const name = req.body.name;
-      const apellido1 = req.body.apellido1;
-      const apellido2 = req.body.apellido2;
-      const phone = req.body.phone;
-      const blood = req.body.tipodesangre;
+  const key = 'QxiE+JMOl7PTGP8rDIwhew==';
+    const email = req.body.email;
+    const username = req.body.username;
+    const name = req.body.name;
+    const apellido1 = req.body.apellido1;
+    const apellido2 = req.body.apellido2;
+    const phone = req.body.phone;
+    const blood = req.body.tipodesangre;
   
     client.query(
       `UPDATE Usuario
            SET nombre = $1, 
-               ap = $2, 
-               am = $3,
+               ap = pgp_sym_encrypt( $2, $8), 
+               am = pgp_sym_encrypt( $3, $8),
                apodo = $4,
-               numerotelefonico = $5,
-               tipodesangre = $6
+               numerotelefonico = pgp_sym_encrypt( $5, $8),
+               tipodesangre = pgp_sym_encrypt( $6, $8)
           WHERE idcuenta_fk = ( SELECT idcuenta from Cuenta WHERE correo = $7 )
           ;`,
-      [name, apellido1, apellido2, username, phone, blood, email],
+      [name, apellido1, apellido2, username, phone, blood, email, key],
       (err, result) => {
         if (err)
         {
@@ -115,13 +117,20 @@ const deleteUserFn = (req, res, client) => {
 //Show info from usuario
 
 const showUserFn = (req, res, client) => {
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';
     const idusario =   req.body.idusuario;
   
     client.query(`
-        SELECT * FROM cuenta
+        SELECT nombre, 
+        pgp_sym_decrypt(ap::bytea, $2) as ap
+        pgp_sym_decrypt(am::bytea, $2) as am
+        apodo, fotoperfil,
+        pgp_sym_decrypt(numerotelefonico::bytea, $2) as numerotelefonico
+        pgp_sym_decrypt(tipodesangre::bytea, $2) as tipodesangre
+        idcuenta_fk, fechanac, hasmembresia FROM Usuario
         WHERE idusuario = $1
         ;`,
-      [idusario],
+      [idusario, key],
       (err, result) => {
         if (err)
         {
@@ -130,7 +139,7 @@ const showUserFn = (req, res, client) => {
         else
         {
           console.log(result);
-          res.send({ message: "Actualización exitosa de contrasena." });
+          res.send({ message: "Mostrado cuenta" });
         }
       }
     );
