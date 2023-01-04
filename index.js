@@ -77,6 +77,7 @@ const { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUs
 const { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserAllergyFn, deleteUserAllergyFn, showUserAllergyFn } = require("./fn_queries/userDataFile");
 const { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn } = require("./fn_queries/userFile");
 const { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn } = require("./fn_queries/userMotorcycleFile");
+const { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn } = require("./fn_queries/userEventFile");
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -101,9 +102,9 @@ app.post("/showUserClub", (req, res) => showUserClubFn(req, res, client));
 app.put("/updateClubAddress", (req, res) => updateClubAddressFn(req, res, client));
 
 //Members { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn }
-app.post("/infoUserClub", (req, res) => newMemberClubFn(req, res, client));
-app.post("/infoClubClub", (req, res) => newMemberClubAcceptFn(req, res, client));
-app.post("/infoClubClub", (req, res) => newMemberClubRejectFn(req, res, client));
+app.post("/newMemberClub", (req, res) => newMemberClubFn(req, res, client));
+app.post("/newMemberClubAccept", (req, res) => newMemberClubAcceptFn(req, res, client));
+app.post("/newMemberClubReject", (req, res) => newMemberClubRejectFn(req, res, client));
 app.post("/infoClubMembers", (req, res) => showMiembrosClubFn(req, res, client));
 
 //UserCompanion { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionAllergyFn, deleteCompanionAllergyFn, showCompanionAllergyFn }
@@ -136,6 +137,14 @@ app.post("/addMotorcycle", (req, res) => addUserMotorcycleFn(req, res, client));
 app.put("/updateMotorcycle", (req, res) => updateUserMotorcycleFn(req, res, client));
 app.post("/deletemotorcycle", (req, res) => deleteUserMotorcycleFn(req, res, client));
 app.post("/showMotorcycleInfo", (req, res) => showUserMotorcycleFn(req, res, client));
+
+//IndividualEvent { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn }
+app.post("/addUserEvent", (req, res) => addUserEventFn(req, res, client));
+app.put("/updateUserEvent", (req, res) => updateUserEventFn(req, res, client));
+app.post("/deleteUserEvent", (req, res) => deleteUserEventFn(req, res, client));
+app.post("/showUserEventList", (req, res) => showUserEventListFn(req, res, client));
+app.post("/showUserEventEvent", (req, res) => showUserEventEventFn(req, res, client));
+app.post("/showUserEventPoints", (req, res) => showUserEventPointsFn(req, res, client));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 

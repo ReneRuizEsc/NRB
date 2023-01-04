@@ -54,7 +54,7 @@ const addClubFn = (req, res, client) => {
 
         UPDATE usuario
         SET hasmembresia = true
-        WHERE idusuario = $6;
+        WHERE idusuario = $6
         ;`
 
       client.query(
