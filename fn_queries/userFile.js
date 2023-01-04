@@ -24,7 +24,7 @@ const addUserFn = (req, res, client) => {
       with first_insert as (insert into cuenta(correo, contrasena) 
         values($1, $2) RETURNING idcuenta) 
         insert into usuario( nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idcuenta_fk, fechanac, hasmembresia) 
-        values ( $3, pgp_sym_encrypt( $4, $12), pgp_sym_encrypt( $5, $12), $6, $7, $pgp_sym_encrypt( $8, $12), pgp_sym_encrypt( $9, $12), (select idcuenta from first_insert), $10, $11)
+        values ( $3, pgp_sym_encrypt( $4, $12), pgp_sym_encrypt( $5, $12), $6, $7, pgp_sym_encrypt( $8, $12), pgp_sym_encrypt( $9, $12), (select idcuenta from first_insert), $10, $11)
         ;`
     
     client.query(
