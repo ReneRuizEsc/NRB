@@ -125,8 +125,8 @@ const showUserFn = (req, res, client) => {
         pgp_sym_decrypt(ap::bytea, $2) as ap
         pgp_sym_decrypt(am::bytea, $2) as am
         apodo, fotoperfil,
-        pgp_sym_decrypt(numerotelefonico::bytea, $2) as numerotelefonico
-        pgp_sym_decrypt(tipodesangre::bytea, $2) as tipodesangre
+        pgp_sym_decrypt(numerotelefonico::bytea, $2) as numerotelefonico,
+        pgp_sym_decrypt(tipodesangre::bytea, $2) as tipodesangre,
         idcuenta_fk, fechanac, hasmembresia FROM Usuario
         WHERE idusuario = $1
         ;`,
