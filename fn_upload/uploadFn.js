@@ -7,7 +7,7 @@ const uploadProfilePic = (req, res, client) => {
     const randStr = crypto.randomBytes(5).toString('hex');
     const fileExt = getFileExtension(file.name);
 
-    const path =`${__dirname}/files/images/users/${id}/profile-${randStr}${fileExt}`;
+    const path =`${__dirname}/../files/images/users/${id}/profile-${randStr}${fileExt}`;
 
     file.mv(path, (err) => {
         if (err)
