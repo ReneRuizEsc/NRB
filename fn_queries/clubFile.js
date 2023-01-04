@@ -47,10 +47,14 @@ const addClubFn = (req, res, client) => {
         values ((select idMembresia from second_insert), $7)),
 		
       fourth_insert as( INSERT INTO direccion_club (pais, estado, municipio, colonia, calle, numero, direccionlat, direccionlong, idclub_fk)
-        VALUES ($8, $9, $10, $11, $12, $13, $14, $15, (select idClub from first_insert)))
+        VALUES ($8, $9, $10, $11, $12, $13, $14, $15, (select idClub from first_insert))),
 		
-        INSERT INTO colores_club (idclub_fk, logo, logo_ubicacion, logo_nombre_club)
-        VALUES ((select idClub from first_insert), $16, $17, $18)
+      fifth_clause as( INSERT INTO colores_club (idclub_fk, logo, logo_ubicacion, logo_nombre_club)
+        VALUES ((select idClub from first_insert), $16, $17, $18))
+
+        UPDATE usuario
+        SET hasmembresia = true
+        WHERE idusuario = $6;
         ;`
 
       client.query(
