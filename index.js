@@ -107,6 +107,7 @@ app.put("/updateClub", (req, res) => updateClubFn(req, res, client));
 app.post("/delteClub", (req, res) => deleteClubFn(req, res, client));
 app.post("/showClubClub", (req, res) => showClubClubFn(req, res, client));
 app.post("/showUserClub", (req, res) => showUserClubFn(req, res, client));
+app.post("/showClublist", (req, res) => showClubListFn(req, res, client));
 app.put("/updateClubAddress", (req, res) => updateClubAddressFn(req, res, client));
 
 //Members { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn }

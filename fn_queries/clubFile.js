@@ -213,6 +213,43 @@ const showUserClubFn = (req, res, client) => {
 
 // idUser = all info of direccion_club, colores_club, club.
 
+const showClubListFn = (req, res, client) => {
+
+  const queryStr = `
+    select club.idclub, club.nombre as nombreClub, usuario.apodo from cargos
+    INNER JOIN miembro_club on idmembresia = cargos.idmiembro_fk
+    INNER JOIN usuario on miembro_club.idusuario_fk = usuario.idusuario
+    INNER JOIN club on miembro_club.idclub_fk = idclub
+    where cargos.cargo_fk = 1
+    ;`
+
+  client.query(
+    queryStr,
+    [user],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        res.send({ error: err });
+      }
+
+      if (result.rows.length > 0)
+      {
+        res.send(result.rows[0]);
+      }
+      else
+      {
+        res.send({ message: "Lista de clubes" });
+        console.log(result);
+      }
+    }
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+// idUser = all info of direccion_club, colores_club, club.
+
 const updateClubAddressFn = (req, res, client) => {
   const idclub = req.body.idclub;
   const logo = req.body.logo;
@@ -250,6 +287,6 @@ const updateClubAddressFn = (req, res, client) => {
   );
 }
 
-module.exports = { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn }
+module.exports = { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, showClubListFn, updateClubAddressFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
