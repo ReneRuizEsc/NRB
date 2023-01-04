@@ -225,7 +225,7 @@ const showClubListFn = (req, res, client) => {
 
   client.query(
     queryStr,
-    [user],
+    [],
     (err, result) => {
       if (err)
       {
@@ -235,7 +235,7 @@ const showClubListFn = (req, res, client) => {
 
       if (result.rows.length > 0)
       {
-        res.send(result.rows[0]);
+        res.send(result.rows);
       }
       else
       {
