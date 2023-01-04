@@ -3,7 +3,7 @@ const cors = require("cors");
 const Pool = require("pg").Pool;
 
 require("dotenv").config();
-
+const fileUpload = require("express-fileupload");
 
 /////// CONEXIÓN BASE DE DATOS ///////
 let client = null;
@@ -65,6 +65,13 @@ app.use(
   })
 );
 
+// Para carga de archivos
+app.use(fileUpload({
+  useTempFiles : true,
+  tempFileDir : '/tmp/',
+  createParentPath: true
+}));
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 //const {  } = require("./fn_queries/"); No borres esta wea
@@ -78,6 +85,7 @@ const { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddr
 const { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn } = require("./fn_queries/userFile");
 const { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn } = require("./fn_queries/userMotorcycleFile");
 const { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn } = require("./fn_queries/userEventFile");
+const { uploadProfilePic } = require("./fn_upload/uploadFn");
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -131,6 +139,9 @@ app.put("/update", (req, res) => updateUserFn(req, res, client));
 app.post("/deleteUser", (req, res) => deleteUserFn(req, res, client));
 app.post("/showUser", (req, res) => showUserFn(req, res, client));
 app.put("/updateContrasena", (req, res) => updateContrasenaFn(req, res, client));
+    // UPLOAD
+app.post("/uploadProfilePic", (req, res) => uploadProfilePic(req, res));
+
 
 //Motorcycle { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn }
 app.post("/addMotorcycle", (req, res) => addUserMotorcycleFn(req, res, client));

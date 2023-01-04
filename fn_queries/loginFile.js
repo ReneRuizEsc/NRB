@@ -31,7 +31,7 @@ const loginFn = (req, res, client) => {
           res.send(result.rows[0]);
         } else {
           res.send({ message: "Correo o contraseña incorrectos." });
-          console.log(result);
+          console.log("email: " + email);
         }
       }
     );
