@@ -15,7 +15,7 @@ const uploadProfilePic = (req, res, client) => {
             return res.status(500).send(err);
         }
         console.log("se ha subido la imagen")
-        
+
         client.query(
             `UPDATE Usuario
                 SET fotoperfil = $1
@@ -25,12 +25,11 @@ const uploadProfilePic = (req, res, client) => {
             (err, result) => {
               if (err)
               {
-                res.send({ error: 'No fue actualizada la foto' });
+                //
               }
               else
               {
                 console.log(result);
-                res.send({ message: "Actualización exitosa de foto." });
               }
             }
           );
