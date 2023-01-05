@@ -60,7 +60,7 @@ app.use(
 
       secure: "auto",
       httpOnly: true,
-      sameSite: 'none',
+      sameSite: 'strict',
     },
   })
 );
