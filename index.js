@@ -77,7 +77,7 @@ app.use(fileUpload({
 //const {  } = require("./fn_queries/"); No borres esta wea
 
 const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn, showClubListFn } = require("./fn_queries/clubFile");
-const { loginFn } = require("./fn_queries/loginFile");
+const { loginFn, restorePassword } = require("./fn_queries/loginFile");
 const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn } = require("./fn_queries/membersFile");
 const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn } = require("./fn_queries/otherFunctionsFile");
 const { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionAllergyFn, deleteCompanionAllergyFn, showCompanionAllergyFn } = require("./fn_queries/userCompanionFile");
@@ -93,6 +93,7 @@ const { uploadProfilePic } = require("./fn_upload/uploadFn");
 
 //Login
 app.post("/login", (req, res) => loginFn(req, res, client)); //email, password
+app.post("/restorePassword", (req, res) => restorePassword(req, res, client)); //email
 
 //Others { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
 app.post("/verifyUser", (req, res) => verifyStatusFn(req, res, client));
