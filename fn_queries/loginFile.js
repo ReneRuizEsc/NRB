@@ -9,7 +9,7 @@ var nodemailer = require('nodemailer');
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const loginFnz = (req, res, client) => {
+const loginFn = (req, res, client) => {
     const email = req.body.email;
     const password = req.body.password;
     const key = 'QxiE+JMOl7PTGP8rDIwhew==';
@@ -51,8 +51,8 @@ const loginFnz = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-//const restoreEmail = (req, res, client) => {
-const loginFn = (req, res, client) => {
+const restoreEmail = (req, res, client) => {
+//const loginFn = (req, res, client) => {
 
 const email = req.body.email;
 
