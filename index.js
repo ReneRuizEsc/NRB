@@ -40,7 +40,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: [frontendURL, 'http://192.168.0.57:3000'],
+    origin: [frontendURL, 'http://nicerider.site', 'http://www.nicerider.site'],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -60,7 +60,7 @@ app.use(
 
       secure: "auto",
       httpOnly: true,
-      sameSite: 'none',
+      sameSite: 'strict',
     },
   })
 );
