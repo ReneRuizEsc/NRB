@@ -69,7 +69,7 @@ const restorePassword = (req, res, client) => {
       console.log(err);
     }
     else {
-      if (result.rows > 0) {
+      if (result.rows.length > 0) {
         userEmailResponse = result.rows[0]; //{ contrasena: 'c' }
         console.log("In query; Contrasena del coso: " + userEmailResponse.contrasena);
 

@@ -86,6 +86,7 @@ const { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn } 
 const { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn } = require("./fn_queries/userMotorcycleFile");
 const { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn } = require("./fn_queries/userEventFile");
 const { uploadProfilePic } = require("./fn_upload/uploadFn");
+const { getProfilePic } = require("./fn_download/download");
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -94,6 +95,7 @@ const { uploadProfilePic } = require("./fn_upload/uploadFn");
 //Login
 app.post("/login", (req, res) => loginFn(req, res, client)); //email, password
 app.post("/restorePassword", (req, res) => restorePassword(req, res, client)); //email
+app.get("/getProfilePic", (req, res) => getProfilePic(req, res, client))
 
 //Others { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
 app.post("/verifyUser", (req, res) => verifyStatusFn(req, res, client));
