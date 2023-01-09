@@ -158,7 +158,7 @@ const showUserFn = (req, res, client) => {
 // If idUsuario provides the correct password it can be changed.
 
 const updateContrasenaFn = (req, res, client) => {
-    const idusario =   req.body.idusuario;
+    const idusario =   req.session.user.idusuario;
     const contrasena = req.body.contrasenaActual;
     const contrasenaNueva = req.body.contrasenaNueva;
   
@@ -168,7 +168,7 @@ const updateContrasenaFn = (req, res, client) => {
         WHERE idcuenta = ( SELECT idCuenta_fk from usuario WHERE idusuario = $2 )
         and contrasena = $3
         ;`,
-      [contrasena, idusario, contrasenaNueva],
+      [contrasenaNueva, idusario, contrasena],
       (err, result) => {
         if (err)
         {
@@ -176,8 +176,14 @@ const updateContrasenaFn = (req, res, client) => {
         }
         else
         {
-          console.log(result);
-          res.send({ message: "Actualización exitosa de contrasena." });
+          if(result.rowCount === 0){
+            console.log("Contrasena incorrecta");
+            return res.send({ message: "Contraseña incorrecta." });
+          }else{
+            console.log("Contrasena actualizada");
+            return res.send({ message: "Actualización exitosa de contraseña." });
+
+          }
         }
       }
     );

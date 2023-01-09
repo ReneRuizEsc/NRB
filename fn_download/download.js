@@ -26,7 +26,20 @@ const getProfilePic = (req, res, client) => {
       });
 }
 
-function getFileExtension (name){
+const downloadTest = (req, res, client) => {
+    
+    const testPath = `${__dirname}/../files/test.xlsx`;
+
+    try {
+        
+        return res.download(pathObj.resolve(testPath), "reglamento"+getFileExtension(testPath)); 
+    } catch (error) {
+        
+    }
+
+}
+
+function getFileExtension(name){
     try {
         let ext = name.match(/\.[^.]+$/gmi);
 
@@ -36,4 +49,4 @@ function getFileExtension (name){
     }
 }
 
-module.exports = { getProfilePic }
+module.exports = { getProfilePic, downloadTest }
