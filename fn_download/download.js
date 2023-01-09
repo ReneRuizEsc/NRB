@@ -3,7 +3,7 @@ const pathObj = require('path');
 
 const getProfilePic = (req, res, client) => {
     const idusuario = req.query.idusuario;
-  
+    const defaultPicturePath = `${__dirname}/../files/images/users/defaultProfilePic.webp`;
     const query = `
       SELECT fotoperfil from usuario WHERE idusuario = $1;
     `;
@@ -13,15 +13,15 @@ const getProfilePic = (req, res, client) => {
       [idusuario], 
       (err, result)=>{
           if(err)
-            res.send("");
+            res.sendFile(pathObj.resolve(defaultPicturePath));
           else{
 
-            if(result.rows.length < 1)
-              res.send("");
+            if(result.rows.length < 1 || result.rows[0].fotoperfil.length < 2)
+                return res.sendFile(pathObj.resolve(defaultPicturePath)); 
 
             const path = result.rows[0].fotoperfil;
             console.log("Image path: ", path)
-            res.sendFile(pathObj.resolve(path));
+            return res.sendFile(pathObj.resolve(path));
           }
       });
 }

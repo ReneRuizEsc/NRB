@@ -33,17 +33,18 @@ const loginFn = (req, res, client) => {
     (err, result) => {
       if (err) {
         console.log(err);
-        res.send({ error: err });
+        return res.send({ error: err });
+        
       }
 
       if (result.rows.length > 0) {
         req.session.user = result.rows[0];
         console.log("sesión creada");
         console.log(req.session.user);
-        res.send(result.rows[0]);
+        return res.send(result.rows[0]);
       } else {
         res.send({ message: "Correo o contraseña incorrectos." });
-        console.log("email: " + email);
+        return console.log("email: " + email);
       }
     }
   );
