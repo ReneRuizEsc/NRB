@@ -76,7 +76,15 @@ const updateUserFn = (req, res, client) => {
         }
         else
         {
-          console.log(result);
+          req.session.user = {
+            ...req.session.user,
+            nombre: name,
+            ap: apellido1,
+            am: apellido2,
+            apodo: username,
+            numerotelefonico: phone,
+            tipodesangre: blood
+          }
           res.send({ message: "Actualización exitosa de datos." });
         }
       }
