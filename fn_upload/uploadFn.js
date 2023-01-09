@@ -1,3 +1,4 @@
+const fs = require('fs');
 const crypto = require("crypto");
 
 function getFileExtension (name){
@@ -12,77 +13,202 @@ function getFileExtension (name){
 
 //////////////////////////////////////////////////////// - Patrocinador - ////////////////////////////////////////////////////////
 
+//id = idrepresentante
+
 const uploadRepProfilePic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id; //idRepresentante
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/sponsor/images/${id}/${id}-profilePic${fileExt}`;
+  const path =`${__dirname}/../files/sponsor/images/${id}/${id}-profilePic-${randStr}${fileExt}`;
 
-  file.mv(path, (err) => {
-    if (err)
-    {
-        return res.status(500).send(err);
-    }
-    console.log("se ha subido la imagen")
+  client.query(
+    `SELECT fotoperfil FROM rep_empresa WHERE idrepresentate = $1;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old profile picture deleted");
+        } catch (error) {
+          console.log(error);
+        }
 
-    client.query(
-        `UPDATE Usuario
-            SET fotoperfil = $1
-            WHERE idusuario = $2
-            ;`,
-        [path, id],
-        (err, result) => {
+        file.mv(path, (err) => {
           if (err)
           {
-            //
+              return res.status(500).send(err);
           }
-          else
-          {
-            console.log(result);
-          }
-        }
-      );
-    return res.send({ message: "La imagen se ha subido con éxito." });
-});
+          console.log("se ha subido la imagen")
+      
+          client.query(
+              `UPDATE rep_empresa
+                  SET fotoperfil = $1
+                  WHERE idrepresentante = $2
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+
+    }
+  )
   
 }
 
 //////////////////////////////////////////////////
 
 const uploadPublicSpaceLogo = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/sponsor/images/${id}/Logo${fileExt}`;
+  const path =`${__dirname}/../files/sponsor/images/${id}/Logo-${randStr}${fileExt}`;
+
+  client.query(
+    `SELECT logo FROM espacio_publico
+    WHERE idrepresentate = $1
+    ;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old profile picture deleted");
+        } catch (error) {
+          console.log(error);
+        }
+
+        file.mv(path, (err) => {
+          if (err)
+          {
+              return res.status(500).send(err);
+          }
+          console.log("se ha subido la imagen")
+      
+          client.query(
+              `UPDATE espacio_publico
+                  SET logo = $1
+                  WHERE idrepresentante = $2
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+
+    }
+  )
 
 }
 
 //////////////////////////////////////////////////
 
 const uploadPublicSpacePic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
   const path =`${__dirname}/../files/sponsor/images/${id}/PublicPic-${randStr}${fileExt}`;
 
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("Se ha subido la imagen")
+
+    client.query(
+        `INSERT INTO foto_espacioP (idespacioP_fk, foto)
+          VALUES ($2, $1)
+          ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////--------------------
+
+//id = idproducto
 
 const uploadProductPic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
   const path =`${__dirname}/../files/sponsor/files/${id}/${id}-ProductPic-${randStr}${fileExt}`;
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("Se ha subido la imagen")
+
+    client.query(
+        `INSERT INTO foto_producto (idProducto_fk, foto)
+          VALUES ($2, $1)
+          ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 }
 
 //////////////////////////////////////////////////////// - Usuario - ////////////////////////////////////////////////////////
+
+// in (idrepresentante from rep_empresa where idcuenta_fk = $2)
+// id = idusuario
 
 const uploadProfilePic = (req, res, client) => {
 
@@ -96,346 +222,1066 @@ const uploadProfilePic = (req, res, client) => {
 
   const path =`${__dirname}/../files/images/users/${id}/profile-${randStr}${fileExt}`;
 
-  file.mv(path, (err) => {
-      if (err)
-      {
-          return res.status(500).send(err);
-      }
-      console.log("se ha subido la imagen")
+  client.query(
+    `SELECT fotoperfil FROM usuario WHERE idusuario = $1;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old profile picture deleted");
+        } catch (error) {
+          console.log(error);
+        }
 
-      client.query(
-          `UPDATE Usuario
-              SET fotoperfil = $1
-              WHERE idusuario = $2
-              ;`,
-          [path, id],
-          (err, result) => {
+        file.mv(path, (err) => {
             if (err)
             {
-              res.send({message: "Ha habido un problema. Intente más tarde."})
+                return res.status(500).send(err);
             }
-            else
-            {
-              res.send({message: "Se ha subido la imagen con éxito."})
-            }
-          }
-        );
-  });
+            console.log("se ha subido la imagen")
+      
+            client.query(
+                `UPDATE Usuario
+                    SET fotoperfil = $1
+                    WHERE idusuario = $2
+                    ;`,
+                [path, id],
+                (err, result) => {
+                  if (err)
+                  {
+                    res.send({message: "Ha habido un problema. Intente más tarde."})
+                  }
+                  else
+                  {
+                    res.send({message: "Se ha subido la imagen con éxito."})
+                  }
+                }
+              );
+        });
+
+    }
+  )
+
 }
 
-//////////////////////////////////////////////////
+////////////////////////////////////////////////// - Credencial -///
 
 const uploadCredentialPicF = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const randStr = crypto.randomBytes(5).toString('hex');
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${id}/credential-F-${randStr}${fileExt}`;
+  const path =`${__dirname}/../files/users/verify/${id}/credential-F-${randStr}${fileExt}`;
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE verificacion
+            SET fotoCredencialF = $1,
+            pendiente = true
+            WHERE idusuario = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 
 }
 
 //////////////////////////////////////////////////
 
 const uploadCredentialPicB = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const randStr = crypto.randomBytes(5).toString('hex');
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${id}/credential-B-${randStr}${fileExt}`;
+  const path =`${__dirname}/../files/users/verify/${id}/credential-B-${randStr}${fileExt}`;
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE verificacion
+            fotoCredencialB = $1,
+            pendiente = true
+            WHERE idusuario = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
+
+  
 }
 
 //////////////////////////////////////////////////
 
 const uploadFacePic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const randStr = crypto.randomBytes(5).toString('hex');
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${id}/face-${randStr}${fileExt}`;
+  const path =`${__dirname}/../files/users/verify/${id}/face-${randStr}${fileExt}`;
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE verificacion
+            fotoRostro = $1,
+            pendiente = true
+            WHERE idusuario = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
+  
 }
 
 //////////////////////////////////////////////////
 
 const uploadMotorcyclePicF = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const randStr = crypto.randomBytes(5).toString('hex');
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
   const path =`${__dirname}/../files/users/images/${id}/motoF-${randStr}${fileExt}`;
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE motocicleta
+            fotoFront = $1,
+            WHERE idusuario_fk = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 
 }
 
 //////////////////////////////////////////////////
 
 const uploadMotorcyclePicB = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const randStr = crypto.randomBytes(5).toString('hex');
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
   const path =`${__dirname}/../files/users/images/${id}/motoB-${randStr}${fileExt}`;
-  
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE motocicleta
+            fotoTras = $1,
+            WHERE idusuario_fk = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 }
 
 //////////////////////////////////////////////////
 
 const uploadMotorcyclePicI = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const randStr = crypto.randomBytes(5).toString('hex');
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
   const path =`${__dirname}/../files/users/images/${id}/motoI-${randStr}${fileExt}`;
-  
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE motocicleta
+            fotoIzq = $1,
+            WHERE idusuario_fk = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 }
 
 //////////////////////////////////////////////////
 
 const uploadMotorcyclePicD = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const randStr = crypto.randomBytes(5).toString('hex');
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${id}/motoB-${randStr}${fileExt}`;
-  
+  const path =`${__dirname}/../files/users/images/${id}/motoD-${randStr}${fileExt}`;
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE motocicleta
+            fotoDer = $1,
+            WHERE idusuario_fk = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 }
 
 //////////////////////////////////////////////////
 
 const uploadProfileCompanionPic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const randStr = crypto.randomBytes(5).toString('hex');
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${id}/profileC-${randStr}${fileExt}`;
+   const path =`${__dirname}/../files/users/images/${id}/profileC-${randStr}${fileExt}`;
 
+  client.query(
+    `SELECT fotoperfil FROM acompanante
+        WHERE idusuario_fk = $1
+    ;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old profile picture deleted");
+        } catch (error) {
+          console.log(error);
+        }
+
+        file.mv(path, (err) => {
+          if (err)
+          {
+              return res.status(500).send(err);
+          }
+          console.log("se ha subido la imagen")
+      
+          client.query(
+              `UPDATE acompanante
+                  SET fotoperfil = $1
+                  WHERE idrepresentante = $2
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+    }
+  )
 }
 
 //////////////////////////////////////////////////////// - EventoIndividual - ////////////////////////////////////////////////////////
 
+//id = idevento_individual
+
 const uploadIndividualRouteFile = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/files/${id}/indRoute-${randStr}${fileExt}`;
+   const path =`${__dirname}/../files/users/files/${id}/indRoute-${randStr}${fileExt}`;
+
+   client.query(
+    `SELECT ruta FROM evento_individual
+        WHERE idevento_individual = $1
+    ;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old route deleted");
+        } catch (error) {
+          console.log(error);
+        }
+
+        file.mv(path, (err) => {
+          if (err)
+          {
+              return res.status(500).send(err);
+          }
+          console.log("se ha subido la ruta")
+      
+          client.query(
+              `UPDATE evento_individual
+                  SET ruta = $1
+                  WHERE idEvento_Individual = $2
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+    }
+  )
 }
 
 //////////////////////////////////////////////////
 
 const uploadIndividualPoster = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${id}/indPoster-${randStr}${fileExt}`;
+    const path =`${__dirname}/../files/users/images/${id}/indPoster-${randStr}${fileExt}`;
+
+   client.query(
+    `SELECT poster FROM evento_individual
+        WHERE idevento_individual = $1
+    ;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old poster deleted");
+        } catch (error) {
+          console.log(error);
+        }
+
+        file.mv(path, (err) => {
+          if (err)
+          {
+              return res.status(500).send(err);
+          }
+          console.log("se ha subido el nuevo poster")
+      
+          client.query(
+              `UPDATE evento_individual
+                  SET poster = $1
+                  WHERE idEvento_Individual = $2
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+    }
+  )
 }
 
 //////////////////////////////////////////////////////// - Acuerdo - ////////////////////////////////////////////////////////
 
+//id = idAcuerdo
+
 const uploadContractFile = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const idC = req.headers.idC;
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/files/${id}/contract-${id}-${idC}${fileExt}`;
+    const path =`${__dirname}/../files/club/files/${id}/contract-${id}-${randStr}${fileExt}`;
 
+   client.query(
+      `SELECT contrato FROM acuerdo
+        WHERE idacuerdo = $1
+      ;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old covenant deleted");
+        } catch (error) {
+          console.log(error);
+        }
+
+        file.mv(path, (err) => {
+          if (err)
+          {
+              return res.status(500).send(err);
+          }
+          console.log("Se ha subido el nuevo acuerdo")
+      
+          client.query(
+              `UPDATE acuerdo
+                  SET contrato = $1
+                  WHERE idAcuerdo = $2
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+    }
+  )
 }
 
 //////////////////////////////////////////////////
 
 const uploadClubSpacePic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
-  const idC = req.headers.idC;
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/files/${id}/pic-${id}-${idC}${fileExt}`;
+    const path =`${__dirname}/../files/club/files/${id}/pic-${id}-${idC}${fileExt}`;
+
+   client.query(
+      `SELECT imagen FROM espacio_club
+        WHERE idacuerdo_fk = $1
+      ;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old photo deleted");
+        } catch (error) {
+          console.log(error);
+        }
+
+        file.mv(path, (err) => {
+          if (err)
+          {
+              return res.status(500).send(err);
+          }
+          console.log("Se ha subido el nuevo acuerdo")
+      
+          client.query(
+              `UPDATE espacio_club
+                  SET imagen = $1
+                  WHERE idAcuerdo_fk = $2
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+    }
+  )
 }
 
 //////////////////////////////////////////////////////// - Foro - ////////////////////////////////////////////////////////
 
+//id = idPublicacionForo
+
 const uploadForumPic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${id}/forum-${randStr}${fileExt}`;
+  const path =`${__dirname}/../files/forum/images/${id}/forum-${randStr}${fileExt}`;
 
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE fotos_foro
+            foto = $1,
+            WHERE idpublicacionforo_fk = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 }
-
 //////////////////////////////////////////////////
 
 const uploadForumFile = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const id = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/files/${id}/forum-${randStr}${fileExt}`;
+  const path =`${__dirname}/../files/forum/files/${idC}/forum-${randStr}${fileExt}`;
 
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE archivos_foro
+            archivo = $1,
+            WHERE idpublicacionforo_fk = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 }
 
 //////////////////////////////////////////////////////// - Club - ////////////////////////////////////////////////////////
 
-const uploadColourLogoPic = (req, res, client) => {
+//id = idUsuario
+
+const uploadColourLogoPic = (req, res, client) => { //const path =`${__dirname}/../files/club/images/${idC}/clubLogoPic-${randStr}${fileExt}`;
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const idC = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${idC}/clubLogoPic-${randStr}${fileExt}`;
+    const path =`${__dirname}/../files/club/files/${id}/pic-${id}-${idC}${fileExt}`;
 
+   client.query(
+      `SELECT logo FROM colores_club
+        WHERE idClub_fk in (select idClub_fk from miembro_club where idusuario_fk = $1)
+      ;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old logo deleted");
+        } catch (error) {
+          console.log(error);
+        }
+
+        file.mv(path, (err) => {
+          if (err)
+          {
+              return res.status(500).send(err);
+          }
+          console.log("Se ha subido el nuevo logo")
+      
+          client.query(
+              `UPDATE Colores_club
+                  SET logo = $1
+                  WHERE idClub_fk = (select idClub_fk from miembro_club where idusuario_fk = $1)
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+    }
+  )
 }
 
 //////////////////////////////////////////////////
 
 const uploadColourLocationPic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const idC = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${idC}/clubLocationPic-${randStr}${fileExt}`;
+  const path =`${__dirname}/../files/club/images/${idC}/clubLocationPic-${randStr}${fileExt}`;
 
+  client.query(
+      `SELECT ubiccacion FROM colores_club
+        WHERE idClub_fk in (select idClub_fk from miembro_club where idusuario_fk = $1)
+      ;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old logo_ubicacion deleted");
+        } catch (error) {
+          console.log(error);
+        }
+
+        file.mv(path, (err) => {
+          if (err)
+          {
+              return res.status(500).send(err);
+          }
+          console.log("Se ha subido el nuevo logo")
+      
+          client.query(
+              `UPDATE Colores_club
+                  SET ubicacion = $1
+                  WHERE idClub_fk = (select idClub_fk from miembro_club where idusuario_fk = $1)
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+    }
+  )
 }
 
 //////////////////////////////////////////////////
 
 const uploadColourNamePic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const idC = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${idC}/clubNamePic-${randStr}${fileExt}`;
+  const path =`${__dirname}/../files/club/images/${idC}/clubNamePic-${randStr}${fileExt}`;
 
+  client.query(
+      `SELECT nombre_club FROM colores_club
+        WHERE idClub_fk in (select idClub_fk from miembro_club where idusuario_fk = $1)
+      ;`,
+    [id],
+    (err, result) => {
+        try {
+          fs.unlinkSync(result.rows[0].fotoperfil)
+          console.log("Old nombre_club deleted");
+        } catch (error) {
+          console.log(error);
+        }
+
+        file.mv(path, (err) => {
+          if (err)
+          {
+              return res.status(500).send(err);
+          }
+          console.log("Se ha subido el nuevo logo")
+      
+          client.query(
+              `UPDATE Colores_club
+                  SET nombre_club = $1
+                  WHERE idClub_fk = (select idClub_fk from miembro_club where idusuario_fk = $1)
+                  ;`,
+              [path, id],
+              (err, result) => {
+                if (err)
+                {
+                  res.send({message: "Ha habido un problema. Intente más tarde."})
+                }
+                else
+                {
+                  res.send({message: "Se ha subido la imagen con éxito."})
+                }
+              }
+            );
+      });
+    }
+  )
 }
 
 //////////////////////////////////////////////////
 
+//id = idComunicado
+
 const uploadStatementPic = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const idC = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${idC}/${idC}-statement-${randStr}${fileExt}`;
+  const path =`${__dirname}/../files/club/images/${idC}/${idC}-statement-${randStr}${fileExt}`;
 
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE foto_comunicado
+            foto = $1,
+            WHERE idfoto_fk = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 }
 
 //////////////////////////////////////////////////
 
 const uploadStatementFile = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
   const file = req.files.image;
-  const idC = req.headers.id;
+  const id = req.session.user.idusuario;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/files/${idC}/${idC}-statement-${randStr}${fileExt}`;
+  const path =`${__dirname}/../files/club/files/${idC}/${idC}-statement-${randStr}${fileExt}`;
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE archivos_comunicado
+            archivo = $1,
+            WHERE idcomunicado_fk = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
 }
 
 //////////////////////////////////////////////////
 
 const uploadMembersReportFile = (req, res, client) => {
+  if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
+  const file = req.files.image;
+  const id = req.session.user.idusuario;
+  const randStr = crypto.randomBytes(5).toString('hex');
+  const fileExt = getFileExtension(file.name);
+
+  const path =`${__dirname}/../files/club/files/${idC}/${idC}-ReportMembers-${randStr}${fileExt}`;
+
+  file.mv(path, (err) => {
+    if (err)
+    {
+        return res.status(500).send(err);
+    }
+    console.log("se ha subido la imagen")
+
+    client.query(
+        `UPDATE archivos_comunicado
+            archivo = $1,
+            WHERE idcomunicado_fk = $2
+            ;`,
+        [path, id],
+        (err, result) => {
+          if (err)
+          {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+          }
+          else
+          {
+            res.send({message: "Se ha subido la imagen con éxito."})
+          }
+        }
+      );
+});
+}
+
+//////////////////////////////////////////////////
+
+const uploadDemocraticProcessFile = (req, res, client) => { //const path =`${__dirname}/../files/club/files/${idC}/willOfThePeopleFile-${randStr}${fileExt}`;
+  /*
   const file = req.files.image;
   const idC = req.headers.id;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/files/${idC}/${idC}-ReportMembers-${randStr}${fileExt}`;
+  
+*/
 
 }
 
 //////////////////////////////////////////////////
 
-const uploadDemocraticProcessFile = (req, res, client) => {
+const uploadExpensesReportFile = (req, res, client) => { //const path =`${__dirname}/../files/club/file/${idC}/expenses-${randStr}${fileExt}`;
   const file = req.files.image;
   const idC = req.headers.id;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/files/${idC}/willOfThePeopleFile-${randStr}${fileExt}`;
-
-}
-
-//////////////////////////////////////////////////
-
-const uploadExpensesReportFile = (req, res, client) => {
-  const file = req.files.image;
-  const idC = req.headers.id;
-  const randStr = crypto.randomBytes(5).toString('hex');
-  const fileExt = getFileExtension(file.name);
-
-  const path =`${__dirname}/../files/users/file/${idC}/expenses-${randStr}${fileExt}`;
+  
 }
 
 //////////////////////////////////////////////////////// - Evento - ////////////////////////////////////////////////////////
 
-const uploadClubPosterPic = (req, res, client) => {
+const uploadClubPosterPic = (req, res, client) => { // const path =`${__dirname}/../files/club/images/${idC}/posterClub-${randStr}${fileExt}`;
   const file = req.files.image;
   const idC = req.headers.id;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${idC}/posterClub-${randStr}${fileExt}`;
+  
   
 }
 
 //////////////////////////////////////////////////
 
-const uploadClubRouteFile = (req, res, client) => {
+const uploadClubRouteFile = (req, res, client) => { //const path =`${__dirname}/../files/club/file/${idC}/routePicClub-${randStr}${fileExt}`;
   const file = req.files.image;
   const idC = req.headers.id;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/file/${idC}/routePicClub-${randStr}${fileExt}`;
+  
 
 }
 
 //////////////////////////////////////////////////
 
-const uploadClubEventFile= (req, res, client) => {
+const uploadClubEventFile= (req, res, client) => { //const path =`${__dirname}/../files/club/file/${idC}/routeFileClub-${randStr}${fileExt}`;
   const file = req.files.image;
   const idC = req.headers.id;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/file/${idC}/routeFileClub-${randStr}${fileExt}`;
+  
 }
 
 //////////////////////////////////////////////////
 
-const uploadClubEventExpencesFile = (req, res, client) => {
+const uploadClubEventExpencesFile = (req, res, client) => { //const path =`${__dirname}/../files/club/file/${idC}/expenses-${randStr}${fileExt}`;
   const file = req.files.image;
   const idC = req.headers.id;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/file/${idC}/expenses-${randStr}${fileExt}`;
+  
 
 }
 
 //////////////////////////////////////////////////
 
-const uploadClubEventPic = (req, res, client) => {
+const uploadClubEventPic = (req, res, client) => { //const path =`${__dirname}/../files/club/images/${idC}/clubLogo-${randStr}${fileExt}`;
   const file = req.files.image;
   const idC = req.headers.id;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
-  const path =`${__dirname}/../files/users/images/${idC}/clubLogo-${randStr}${fileExt}`;
+  
 
 }
 
