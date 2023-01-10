@@ -6,6 +6,7 @@
 
 const fs = require('fs');
 const crypto = require("crypto");
+const pathObj = require('path');
 
 function getFileExtension (name){
   try {
@@ -55,31 +56,6 @@ const verifyStatusFn = (req, res, client) => {
 //User must not be registered nor be verified NO EXISTE
 
 const verifyUserFn = (req, res, client) => {
-    const usuario = req.body.idusuario;
-    
-    const queryStr = `
-            INSERT INTO verificacion (idUsuario_FK, FotoCredencialF, FotoCredencialT, FotoRostro, Verificacion, Pendiente)
-            VALUES ($1, '', '', '', false, false)
-        ;`
-    
-    client.query(
-        queryStr,
-        [usuario, fotoCredencialFrontal, fotoCredencialTrasera, fotoRostro],
-        (err, result) => {
-        if (err)
-        {
-            console.log(err);
-            res.send({ error: 'No fueron enviados los datos de verificacion' });
-            return;
-        }
-            console.log('Solicitud registrada');
-            console.log(result)
-            res.send({ created: true})
-        }
-    );
-}
-
-const uploadCredentialPic = (req, res, client) => {
     if(!req.session?.user || !req.session.user.idusuario)
         res.send("Hubo un problema");
   
@@ -92,7 +68,7 @@ const uploadCredentialPic = (req, res, client) => {
 
     Object.entries(file).forEach(([key, value]) => {
 
-        if(key == 'fotofredencialf')
+        if(key == 'fotocredencialf')
         {
             filepath.push(`${__dirname}/../files/users/${id}/verify/credential-F-${randStr}${fileExt}`);
             value.mv(`${__dirname}/../files/users/${id}/verify/credential-F-${randStr}${fileExt}`, (err) => console.log(err))
@@ -110,7 +86,7 @@ const uploadCredentialPic = (req, res, client) => {
         }
     })
 
-    let query = 'UPDATE verificacion SET fotoCredencialF = $1, fotoCredencialT = $2, fotoRostro = $3, pendiente = true WHERE idusuario = $4;';
+    let query = 'UPDATE verificacion SET fotoCredencialF = $1, fotoCredencialT = $2, fotoRostro = $3, pendiente = true WHERE idusuario_fk = $4;';
     client.query(query, [filepath[0], filepath[1], filepath[2], id],
         (err, result) => {
             if (err)
@@ -130,6 +106,51 @@ const uploadCredentialPic = (req, res, client) => {
 
 const verifyAdminFn = (req, res, client) => {
     const usuario = req.body.usuario;
+
+    let userEmailResponse;
+
+    const query =`
+        WITH asd as (SELECT idCuenta_fk FROM usuario WHERE idcuenta = $1)
+        SELECT correo FROM cuenta where idCuenta = (SELECT idCuenta FROM asd)
+        ;`;
+
+    client.query(query, [usuario], (err, result) => {
+        if (err) {
+            console.log("Error al ejecutar la consulta del correo");
+            console.log(err);
+          }
+          else {
+            if (result.rows.length > 0) {
+              userEmailResponse = result.rows[0];
+      
+              let transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                  user: 'ttmotosescom@gmail.com',
+                  pass: 'aixmgdgdafdofbdc'
+                }
+              });
+      
+              let mailOptions = {
+                from: 'ttmotosescom@gmail.com',
+                to: userEmailResponse.correo,
+                subject: 'Recuperación de contraseña. NiceRider',
+                text: 'La solicitud de verificacion de la cuenta con correo: ' + userEmailResponse.correo + ' fue aprobada. \n ATTE: NiceRider'
+              };
+      
+              transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('Email sent: ' + info.response);
+                }
+              });
+            }
+            else {
+              console.log("No existe el correo");
+            }
+          }
+        });
     
     const queryStr = `
         UPDATE verificacion 
@@ -161,11 +182,77 @@ const verifyAdminFn = (req, res, client) => {
 
 const notVerifyAdminFn = (req, res, client) => {
     const usuario = req.body.usuario;
+
+    client.query(
+        `SELECT fotoCredencialF, fotoCredencialT, fotoRostro FROM verificacion
+        WHERE idusuario_fk = $1
+        ;`,
+        [usuario],
+        (err, result) => {
+            try {
+              fs.unlinkSync(result.rows[0].fotoCredencialF);
+              fs.unlinkSync(result.rows[1].fotoCredencialT);
+              fs.unlinkSync(result.rows[2].fotoRostro);
+              console.log("Old pictures deleted");
+            } catch (error) {
+              console.log(error);
+            }
+          })
+
+    let userEmailResponse;
+
+    const query =`
+        WITH asd as (SELECT idCuenta_fk FROM usuario WHERE idcuenta = $1)
+        SELECT correo FROM cuenta where idCuenta = (SELECT idCuenta FROM asd)
+        ;`;
+
+    client.query(query, [usuario], (err, result) => {
+        if (err) {
+            console.log("Error al ejecutar la consulta del correo");
+            console.log(err);
+          }
+          else {
+            if (result.rows.length > 0) {
+              userEmailResponse = result.rows[0];
+      
+              let transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                  user: 'ttmotosescom@gmail.com',
+                  pass: 'aixmgdgdafdofbdc'
+                }
+              });
+      
+              let mailOptions = {
+                from: 'ttmotosescom@gmail.com',
+                to: userEmailResponse.correo,
+                subject: 'Recuperación de contraseña. NiceRider',
+                text: 'La solicitud de verificacion de la cuenta con correo: ' + userEmailResponse.correo + ' fue rechazada. \n ATTE: NiceRider'
+              };
+      
+              transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('Email sent: ' + info.response);
+                }
+              });
+            }
+            else {
+              console.log("No existe el correo");
+            }
+          }
+        });
     
     const queryStr = `
-        DELETE from verificacion
+        UPDATE verificacion 
+        set verificacion = FALSE,
+        pendiente = FALSE,
+        fotoCredencialF = '',
+        fotoCredencialT = '',
+        fotoRostro = ''
         where idUsuario_fk = $1;
-        ;`
+        ;`;
     
     client.query(
         queryStr,
@@ -189,10 +276,11 @@ const notVerifyAdminFn = (req, res, client) => {
 //Use this to show a list of all pending requests
 
 const showPendingVerificationFn = (req, res, client) => {
+    if(req.session.tipocuenta !== 2)
+        return res.send("No es administrador");
     const valor = true;
-    
     const queryStr = `
-    SELECT * from verificacion
+    SELECT idusuario_fk from verificacion
     WHERE pendiente = $1;
         ;`
     
@@ -217,8 +305,95 @@ const showPendingVerificationFn = (req, res, client) => {
     );
 }
 
+const getCredencialF = (req, res, client) => {
+    if(req.session.tipocuenta !== 2)
+        return res.send("No es administrador");
+
+    const idusuario = req.query.idusuario;
+    const defaultPicturePath = `${__dirname}/../files/images/users/defaultProfilePic.webp`;
+    const query = `
+      SELECT fotocredencialf from verificacion WHERE idusuario_fk = $1;
+    `;
+
+    client.query(
+      query, 
+      [idusuario], 
+      (err, result)=>{
+          if(err)
+            return res.sendFile(pathObj.resolve(defaultPicturePath));
+          else{
+
+            if(result.rows.length < 1 || result.rows[0].fotocredencialf.length < 2)
+                return res.sendFile(pathObj.resolve(defaultPicturePath)); 
+            else{
+                const path = result.rows[0].fotocredencialf;
+                console.log("Image path: ", path)
+                return res.sendFile(pathObj.resolve(path), (err) => err && res.sendFile(pathObj.resolve(defaultPicturePath)));
+            }
+          }
+      });
+}
+
+const getCredencialT = (req, res, client) => {
+    if(req.session.tipocuenta !== 2)
+        return res.send("No es administrador");
+
+    const idusuario = req.query.idusuario;
+    const defaultPicturePath = `${__dirname}/../files/images/users/defaultProfilePic.webp`;
+    const query = `
+      SELECT fotocredencialt from verificacion WHERE idusuario_fk = $1;
+    `;
+
+    client.query(
+      query, 
+      [idusuario], 
+      (err, result)=>{
+          if(err)
+            return res.sendFile(pathObj.resolve(defaultPicturePath));
+          else{
+
+            if(result.rows.length < 1 || result.rows[0].fotocredencialt.length < 2)
+                return res.sendFile(pathObj.resolve(defaultPicturePath)); 
+            else{
+                const path = result.rows[0].fotocredencialt;
+                console.log("Image path: ", path)
+                return res.sendFile(pathObj.resolve(path), (err) => err && res.sendFile(pathObj.resolve(defaultPicturePath)));
+            }
+          }
+      });
+}
+
+const getFotoRostro = (req, res, client) => {
+    if(req.session.tipocuenta !== 2)
+        return res.send("No es administrador");
+
+    const idusuario = req.query.idusuario;
+    const defaultPicturePath = `${__dirname}/../files/images/users/defaultProfilePic.webp`;
+    const query = `
+      SELECT fotorostro from verificacion WHERE idusuario_fk = $1;
+    `;
+
+    client.query(
+      query, 
+      [idusuario], 
+      (err, result)=>{
+          if(err)
+            return res.sendFile(pathObj.resolve(defaultPicturePath));
+          else{
+
+            if(result.rows.length < 1 || result.rows[0].fotorostro.length < 2)
+                return res.sendFile(pathObj.resolve(defaultPicturePath)); 
+            else{
+                const path = result.rows[0].fotorostro;
+                console.log("Image path: ", path)
+                return res.sendFile(pathObj.resolve(path), (err) => err && res.sendFile(pathObj.resolve(defaultPicturePath)));
+            }
+          }
+      });
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { verifyStatusFn, uploadCredentialPic, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
+module.exports = { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
