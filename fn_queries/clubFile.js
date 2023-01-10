@@ -10,137 +10,145 @@ const { getFileExtension } = require("../generalFn/generalFn");
 
 const addClubFn = (req, res, client) => {
 
-    const idusuario = req.session.user.idusuario;
-    const nombre = req.body.nombreClub;
-    const presentacion = req.body.presentacion;
+  const idusuario = req.session.user.idusuario;
+  const nombre = req.body.nombreClub;
+  const presentacion = req.body.presentacion;
 
-    //Esto queda sin usar
-    const mesesSuscripcion = 0;
-    //El creador del club no tiene membresía
-    const fechaRenovacion = new Date("2099-12-31");
+  //Esto queda sin usar
+  const mesesSuscripcion = 0;
+  //El creador del club no tiene membresía
+  const fechaRenovacion = new Date("2099-12-31");
 
-    // 1: Presidente, 2: Vicepresidente, 3: Sargento de armas, 4: Tesorero
-    // 5: Capitan de ruta, 6: Prospect, 7: Miembro; 8: Enforcer (Sin uso en la plataforma)
-    const cargo = 1;
+  // 1: Presidente, 2: Vicepresidente, 3: Sargento de armas, 4: Tesorero
+  // 5: Capitan de ruta, 6: Prospect, 7: Miembro; 8: Enforcer (Sin uso en la plataforma)
+  const cargo = 1;
 
-    const pais = req.body.pais;
-    const estado = req.body.estado;
-    const municipio = req.body.municipio;
-    const colonia = req.body.colonia;
-    const calle = req.body.calle;
-    const numero = req.body.numero;
-    const direccionLat = req.body.direccionLat;
-    const direccionLong = req.body.direccionLong;
+  const pais = req.body.pais;
+  const estado = req.body.estado;
+  const municipio = req.body.municipio;
+  const colonia = req.body.colonia;
+  const calle = req.body.calle;
+  const numero = req.body.numero;
+  const direccionLat = req.body.direccionLat;
+  const direccionLong = req.body.direccionLong;
 
-    const files = req.files;
+  const files = req.files;
 
-    console.log(req.body, req.files)
+  console.log(req.body, req.files)
 
+
+    let query = `
+    with first_insert as (
+      INSERT INTO club( nombre, reglamento, presentacion) 
+      values ($1, $2, $3) RETURNING idClub),
   
-      let query = `
-      with first_insert as (
-        INSERT INTO club( nombre, reglamento, presentacion) 
-        values ($1, $2, $3) RETURNING idClub),
-		
-      second_insert as (INSERT INTO Miembro_Club (SuscripcionMeses, FechaRenovacion, FechaIngreso, idClub_FK, idUsuario_FK) 
-        values ($4, $5, (SELECT current_date), (select idClub from first_insert), $6) RETURNING idMembresia),
-		
-      third_insert as (INSERT INTO cargos(idMiembro_FK, Cargo_FK)
-        values ((select idMembresia from second_insert), $7)),
-		
-      fourth_insert as( INSERT INTO direccion_club (pais, estado, municipio, colonia, calle, numero, direccionlat, direccionlong, idclub_fk)
-        VALUES ($8, $9, $10, $11, $12, $13, $14, $15, (select idClub from first_insert))),
-		
-      fifth_clause as( INSERT INTO colores_club (idclub_fk, logo, logo_ubicacion, logo_nombre_club)
-        VALUES ((select idClub from first_insert), $16, $17, $18)),
-
-      sixt_clause as (
-        UPDATE usuario
-        SET hasmembresia = true
-        WHERE idusuario = $6
-      )
-
-      SELECT idClub from first_insert
-        ;`
-
-      client.query(
-        query,
-        [nombre, "", presentacion, mesesSuscripcion, fechaRenovacion, idusuario, cargo, pais, estado, municipio, colonia, calle, numero, direccionLat, direccionLong, "", "", ""],
-        (err, result) => {
-          if (err)
-          {
-            console.log(err);
-            res.send({ error: 'No se realizó el registro del club' });
-            return;
-          }
+    second_insert as (INSERT INTO Miembro_Club (SuscripcionMeses, FechaRenovacion, FechaIngreso, idClub_FK, idUsuario_FK) 
+      values ($4, $5, (SELECT current_date), (select idClub from first_insert), $6) RETURNING idMembresia),
   
-          console.log(result)
+    third_insert as (INSERT INTO cargos(idMiembro_FK, Cargo_FK)
+      values ((select idMembresia from second_insert), $7)),
+  
+    fourth_insert as( INSERT INTO direccion_club (pais, estado, municipio, colonia, calle, numero, direccionlat, direccionlong, idclub_fk)
+      VALUES ($8, $9, $10, $11, $12, $13, $14, $15, (select idClub from first_insert))),
+  
+    fifth_clause as( INSERT INTO colores_club (idclub_fk, logo, logo_ubicacion, logo_nombre_club)
+      VALUES ((select idClub from first_insert), $16, $17, $18)),
 
-          if(Object.keys(files).length < 1)
-            return res.send({created: true})
+    sixt_clause as (
+      UPDATE usuario
+      SET hasmembresia = true
+      WHERE idusuario = $6
+    )
 
-          const idClub = result.rows[0].idclub;
-          const randStr = crypto.randomBytes(5).toString('hex');
-          let queryStr = `
-              UPDATE colores_club
-              SET 
-          `
-          let queryStrMid = ` `;
-          let queryStrEnd = ` WHERE idclub_fk = ${idClub}`;
+    SELECT idClub from first_insert
+      ;`
 
-          /// queryAdicional se usará para hacer un simple select o para insertar el reglamento.
-          /// el select solo es para que no se rompa
-          let hasReglamento = false;
-          let queryAdicional = ` 
-            UPDATE club 
-            SET reglamento = `;
+    client.query(
+      query,
+      [nombre, "", presentacion, mesesSuscripcion, fechaRenovacion, idusuario, cargo, pais, estado, municipio, colonia, calle, numero, direccionLat, direccionLong, "", "", ""],
+      (err, result) => {
+        if (err)
+        {
+          console.log(err);
+          res.send({ error: 'No se realizó el registro del club' });
+          return;
+        }
 
-          Object.entries(files).forEach(([key, file])=>{
-              let targetPath = `${__dirname}/../files/clubes/${idClub}/`; 
-              console.log(Object.entries(file))
-              if(key === "reglamento"){
-                  targetPath = targetPath + `files/${key}-${randStr}${getFileExtension(file.name)}`;
-                  queryAdicional += `'${targetPath}' WHERE idclub = ${idClub}`
-                  hasReglamento = true;
-              }
-              else{
-                  targetPath = targetPath + `images/colores/${key}-${randStr}${getFileExtension(file.name)}`;
-                  queryStrMid += ` ${key} = '${targetPath}', `;
-              }
-                
-              file.mv(targetPath, (err) => console.log(err))
-          })
+        console.log(result)
 
-          queryStrMid = queryStrMid.replace(/,\s*$/gm, '');
-          
-          let finalQuery = queryStr + queryStrMid + queryStrEnd;
+        if(Object.keys(files).length < 1)
+          return res.send({created: true})
 
-          console.log(finalQuery)
+        const idClub = result.rows[0].idclub;
+        const randStr = crypto.randomBytes(5).toString('hex');
+        let queryStr = `
+            UPDATE colores_club
+            SET 
+        `
+        let queryStrMid = ` `;
+        let queryStrEnd = ` WHERE idclub_fk = ${idClub}`;
 
-          client.query(finalQuery, (err, result)=>{
-              if (err){
-                console.log(err);
-                res.send({ error: 'No se realizó el registro del club' });
-                return;
-              }else{
-                  if(!hasReglamento){
-                    return res.send({ created: true});
+        /// queryAdicional se usará para hacer un simple select o para insertar el reglamento.
+        /// el select solo es para que no se rompa
+        let hasReglamento = false;
+        let queryAdicional = ` 
+          UPDATE club 
+          SET reglamento = `;
+
+        Object.entries(files).forEach(async ([key, file])=>{
+            let targetPath = `${__dirname}/../files/clubes/${idClub}/`; 
+            console.log("Mostrando entries: ", Object.entries(file))
+            if(key === "reglamento"){
+                targetPath = targetPath + `files/${key}-${randStr}${getFileExtension(file.name)}`;
+                queryAdicional += `'${targetPath}' WHERE idclub = ${idClub}`
+                hasReglamento = true;
+            }
+            else{
+                targetPath = targetPath + `images/colores/${key}-${randStr}${getFileExtension(file.name)}`;
+                queryStrMid += ` ${key} = '${targetPath}', `;
+            }
+              
+            await file.mv(targetPath, (err) => console.log(err))
+        })
+
+        queryStrMid = queryStrMid.replace(/,\s*$/gm, '');
+        
+        let finalQuery = queryStr + queryStrMid + queryStrEnd;
+
+        console.log(finalQuery)
+
+        client.query(finalQuery, (err, result)=>{
+            if (err){
+              console.log(err);
+              res.send({ error: 'No se realizó el registro del club' });
+              return;
+            }else{
+                console.log(result)
+                if(!hasReglamento){
+                  console.log("CLUB CREADO SIN REGLAMENTO")
+                  return res.send({ created: true});
+                }
+
+                //// AHORA LA QUERY PARA LA UBICACIÓN DEL REGLAMENTO /////
+                client.query(queryAdicional, (err, ress) => {
+                  if(err){
+                    console.log("ERROR AL AGREGAR EL REGLAMENTO")
+
+                    return res.send({err: 'error'})
                   }
 
-                  //// AHORA LA QUERY PARA LA UBICACIÓN DEL REGLAMENTO /////
-                  client.query(queryAdicional, (err, ress) => {
-                    if(err)
-                      return res.send({err: 'error'})
-                  })
-
+                  console.log("CLUB CREADO con REGLAMENTO")
+                  console.log("SESIÓN: ", req.session.user)
                   return res.send({created: true})
-              }
-          })
+                })
 
-          
-        }
-      );
-  }
+            }
+        })
+
+        
+      }
+    );
+}
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 
