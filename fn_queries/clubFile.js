@@ -126,7 +126,7 @@ const addClubFn = (req, res, client) => {
                 console.log(result)
                 if(!hasReglamento){
                   console.log("CLUB CREADO SIN REGLAMENTO")
-                  return res.send({ created: true});
+                  return res.send({ created: true, idclub: idClub});
                 }
 
                 //// AHORA LA QUERY PARA LA UBICACIÓN DEL REGLAMENTO /////
@@ -139,7 +139,7 @@ const addClubFn = (req, res, client) => {
 
                   console.log("CLUB CREADO con REGLAMENTO")
                   console.log("SESIÓN: ", req.session.user)
-                  return res.send({created: true})
+                  return res.send({created: true, idclub: idClub})
                 })
 
             }
