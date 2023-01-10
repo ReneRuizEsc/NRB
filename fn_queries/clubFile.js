@@ -86,14 +86,22 @@ const addClubFn = (req, res, client) => {
               SET 
           `
           let queryStrMid = ` `;
-          let queryStrEnd = ` WHERE idclub_fk = ${idClub};`;
+          let queryStrEnd = ` WHERE idclub_fk = ${idClub}`;
+
+          /// queryAdicional se usará para hacer un simple select o para insertar el reglamento.
+          /// el select solo es para que no se rompa
+          let hasReglamento = false;
+          let queryAdicional = ` 
+            UPDATE club 
+            SET reglamento = `;
 
           Object.entries(files).forEach(([key, file])=>{
               let targetPath = `${__dirname}/../files/clubes/${idClub}/`; 
               console.log(Object.entries(file))
               if(key === "reglamento"){
                   targetPath = targetPath + `files/${key}-${randStr}${getFileExtension(file.name)}`;
-                  queryStrMid += ` reglamento = '${targetPath}', `;
+                  queryAdicional += `'${targetPath}' WHERE idclub = ${idClub}`
+                  hasReglamento = true;
               }
               else{
                   targetPath = targetPath + `images/colores/${key}-${randStr}${getFileExtension(file.name)}`;
@@ -104,16 +112,28 @@ const addClubFn = (req, res, client) => {
           })
 
           queryStrMid = queryStrMid.replace(/,\s*$/gm, '');
+          
+          let finalQuery = queryStr + queryStrMid + queryStrEnd;
 
-          console.log(queryStr + queryStrMid + queryStrEnd)
+          console.log(finalQuery)
 
-          client.query(queryStr + queryStrMid + queryStrEnd, (err, result)=>{
+          client.query(finalQuery, (err, result)=>{
               if (err){
                 console.log(err);
                 res.send({ error: 'No se realizó el registro del club' });
                 return;
               }else{
-                  return res.send({ created: true});
+                  if(!hasReglamento){
+                    return res.send({ created: true});
+                  }
+
+                  //// AHORA LA QUERY PARA LA UBICACIÓN DEL REGLAMENTO /////
+                  client.query(queryAdicional, (err, ress) => {
+                    if(err)
+                      return res.send({err: 'error'})
+                  })
+
+                  return res.send({created: true})
               }
           })
 
