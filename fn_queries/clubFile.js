@@ -182,8 +182,49 @@ const deleteClubFn = (req, res, client) => {
 
   const idclub = req.body.idclub;
 
-    let query = `DELETE from club
-      WHERE idclub = $1
+    let query = `
+    DELETE from acuerdo WHERE idclub_fk = $1;
+	  
+    DELETE from reporte_gastos WHERE idclub_fk = $1;
+    
+    DELETE from reporte_membresias WHERE club = $1;
+    
+    with asd as (select idvotacion from votaciones where club = $1)
+    DELETE from preguntas_votacion WHERE id_votacion = (select idvotacion from asd);
+    
+    with asd as (select idvotacion from votaciones where club = $1)
+    DELETE from archivos_votaciones WHERE idVotacion_fk = (select idvotacion from asd);
+    
+    with asd as (select idcomunicado from comunicado where club = $1)
+    DELETE from archivos_comunicado WHERE idComunicado_fk = (select idcomunicado from asd);
+    
+    with asd as (select idcomunicado from comunicado where club = $1)
+    DELETE from fotos_comunicado WHERE idfoto_fk = (select idcomunicado from asd);
+    
+    DELETE from comunicado WHERE club = $1;
+    
+    with asd as (select idevento from evento where club = $1)
+    DELETE from foto_evento WHERE idEvento_fk = (select idEvento from asd);
+    
+    with asd as (select idevento from evento where club = $1)
+    DELETE from recuento_acontecimientos WHERE idEvento = (select idEvento from asd);
+    
+    with asd as (select idevento from evento where club = $1)
+    DELETE from puntos_evento WHERE idEvento_fk = (select idEvento from asd);
+    
+    with asd as (select idevento from evento where club = $1)
+    DELETE from archivos_evento WHERE idEvento_fk = (select idEvento from asd);
+    
+    DELETE from evento WHERE club = $1;
+    
+    DELETE from colores_club WHERE idClub_fk = $1;
+    
+    with asd as (select idMembresia from miembro_club where idclub_fk = $1)
+    DELETE from cargos WHERE idmiembro_fk = (select idMembresia from asd);
+    
+    DELETE from miembro_club WHERE idClub_fk = $1;
+    
+    DELETE from club WHERE idclub = $1;
       ;`
 
     client.query(
