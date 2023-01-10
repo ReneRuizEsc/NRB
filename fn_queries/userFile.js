@@ -22,7 +22,7 @@ const addUserFn = (req, res, client) => {
     
     const queryStr = `
       with first_insert as (insert into cuenta(correo, contrasena) 
-        values($1, $2) RETURNING idcuenta) 
+        values($1, pgp_sym_encrypt( $2, $12)) RETURNING idcuenta) 
         insert into usuario( nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idcuenta_fk, fechanac, hasmembresia) 
         values ( $3, pgp_sym_encrypt( $4, $12), pgp_sym_encrypt( $5, $12), $6, $7, pgp_sym_encrypt( $8, $12), pgp_sym_encrypt( $9, $12), (select idcuenta from first_insert), $10, $11)
         ;`
@@ -186,17 +186,18 @@ const showUserFn = (req, res, client) => {
 // If idUsuario provides the correct password it can be changed.
 
 const updateContrasenaFn = (req, res, client) => {
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';
     const idusario =   req.session.user.idusuario;
     const contrasena = req.body.contrasenaActual;
     const contrasenaNueva = req.body.contrasenaNueva;
   
     client.query(`
         UPDATE cuenta
-        SET contrasena = $1
+        SET contrasena = pgp_sym_encrypt( $1, $4)
         WHERE idcuenta = ( SELECT idCuenta_fk from usuario WHERE idusuario = $2 )
-        and contrasena = $3
+        and contrasena = pgp_sym_encrypt( $3, $4)
         ;`,
-      [contrasenaNueva, idusario, contrasena],
+      [contrasenaNueva, idusario, contrasena, key],
       (err, result) => {
         if (err)
         {
