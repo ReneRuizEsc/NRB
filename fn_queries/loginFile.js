@@ -18,7 +18,7 @@ const loginFn = (req, res, client) => {
       SELECT correo, nombre, 
       pgp_sym_decrypt(ap::bytea, $3) as ap,
       pgp_sym_decrypt(am::bytea, $3) as am,
-      apodo, fotoperfil, 
+      apodo, 
       pgp_sym_decrypt(numerotelefonico::bytea, $3) as numerotelefonico, 
       pgp_sym_decrypt(tipodesangre::bytea, $3) as tipodesangre,
       idusuario, fechanac, hasmembresia,
