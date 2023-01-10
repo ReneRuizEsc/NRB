@@ -21,9 +21,12 @@ const loginFn = (req, res, client) => {
       apodo, fotoperfil, 
       pgp_sym_decrypt(numerotelefonico::bytea, $3) as numerotelefonico, 
       pgp_sym_decrypt(tipodesangre::bytea, $3) as tipodesangre,
-      idusuario, fechanac, hasmembresia, tipocuenta
+      idusuario, fechanac, hasmembresia,
+      tipocuenta,
+      verificacion
       FROM usuario 
       INNER JOIN cuenta ON idcuenta = idcuenta_fk AND Correo = $1 AND pgp_sym_decrypt(contrasena::bytea, $3) = $2
+      INNER JOIN verificacion ON idusuario_fk = idusuario
       ;
       `;
 
