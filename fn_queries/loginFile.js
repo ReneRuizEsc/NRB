@@ -21,7 +21,7 @@ const loginFn = (req, res, client) => {
       apodo, fotoperfil, 
       pgp_sym_decrypt(numerotelefonico::bytea, $3) as numerotelefonico, 
       pgp_sym_decrypt(tipodesangre::bytea, $3) as tipodesangre,
-      idusuario, fechanac, hasmembresia
+      idusuario, fechanac, hasmembresia, tipocuenta
       FROM usuario 
       INNER JOIN cuenta ON idcuenta = idcuenta_fk AND Correo = $1 AND pgp_sym_decrypt(contrasena::bytea, $3) = $2
       ;
@@ -53,18 +53,18 @@ const loginFn = (req, res, client) => {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 const restorePassword = (req, res, client) => {
-  //const loginFn = (req, res, client) => {
 
   const email = req.body.email;
+  const key = 'QxiE+JMOl7PTGP8rDIwhew==';
 
   const query = `
-    SELECT contrasena FROM cuenta
+    SELECT pgp_sym_decrypt(contrasena::bytea, $2) FROM cuenta
     WHERE Correo = $1
   ;`
 
   let userEmailResponse;
 
-  client.query(query, [email], (err, result) => {
+  client.query(query, [email, key], (err, result) => {
     if (err) {
       console.log("Error al ejecutar la consulta");
       console.log(err);
@@ -105,7 +105,6 @@ const restorePassword = (req, res, client) => {
       else {
         console.log("No existe el correo");
         res.send({error: "no existe el correo"});
-        //res.send({ error: err });
       }
     }
   });

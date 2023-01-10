@@ -160,7 +160,7 @@ const showUserFn = (req, res, client) => {
         SELECT nombre, 
         pgp_sym_decrypt(ap::bytea, $2) as ap
         pgp_sym_decrypt(am::bytea, $2) as am
-        apodo, fotoperfil,
+        apodo,
         pgp_sym_decrypt(numerotelefonico::bytea, $2) as numerotelefonico,
         pgp_sym_decrypt(tipodesangre::bytea, $2) as tipodesangre,
         idcuenta_fk, fechanac, hasmembresia FROM Usuario
@@ -195,7 +195,7 @@ const updateContrasenaFn = (req, res, client) => {
         UPDATE cuenta
         SET contrasena = pgp_sym_encrypt( $1, $4)
         WHERE idcuenta = ( SELECT idCuenta_fk from usuario WHERE idusuario = $2 )
-        and contrasena = pgp_sym_encrypt( $3, $4)
+        and pgp_sym_decrypt(contrasena::bytea, $4) = $3
         ;`,
       [contrasenaNueva, idusario, contrasena, key],
       (err, result) => {
