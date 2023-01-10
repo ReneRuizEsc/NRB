@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+const { getFileExtension } = require("../generalFn/generalFn");
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 //Club add, update, delete, show(User), show(Club) || Club address update
@@ -8,9 +10,8 @@
 
 const addClubFn = (req, res, client) => {
 
-    const idusuario = req.body.idusuario;
+    const idusuario = req.session.user.idusuario;
     const nombre = req.body.nombreClub;
-    const reglamento = req.body.reglamento;
     const presentacion = req.body.presentacion;
 
     //Esto queda sin usar
@@ -31,9 +32,10 @@ const addClubFn = (req, res, client) => {
     const direccionLat = req.body.direccionLat;
     const direccionLong = req.body.direccionLong;
 
-    const logo = req.body.logo;
-    const logo_ubicacion = req.logoUbicacion;
-    const logo_nombre_club = req.body.logoNombreClub;
+    const files = req.files;
+
+    console.log(req.body, req.files)
+
   
       let query = `
       with first_insert as (
@@ -50,16 +52,20 @@ const addClubFn = (req, res, client) => {
         VALUES ($8, $9, $10, $11, $12, $13, $14, $15, (select idClub from first_insert))),
 		
       fifth_clause as( INSERT INTO colores_club (idclub_fk, logo, logo_ubicacion, logo_nombre_club)
-        VALUES ((select idClub from first_insert), $16, $17, $18))
+        VALUES ((select idClub from first_insert), $16, $17, $18)),
 
+      sixt_clause as (
         UPDATE usuario
         SET hasmembresia = true
         WHERE idusuario = $6
+      )
+
+      SELECT idClub from first_insert
         ;`
 
       client.query(
         query,
-        [nombre, reglamento, presentacion, mesesSuscripcion, fechaRenovacion, idusuario, cargo, pais, estado, municipio, colonia, calle, numero, direccionLat, direccionLong, logo, logo_ubicacion, logo_nombre_club],
+        [nombre, "", presentacion, mesesSuscripcion, fechaRenovacion, idusuario, cargo, pais, estado, municipio, colonia, calle, numero, direccionLat, direccionLong, "", "", ""],
         (err, result) => {
           if (err)
           {
@@ -69,7 +75,69 @@ const addClubFn = (req, res, client) => {
           }
   
           console.log(result)
-          res.send({ created: true})
+
+          if(Object.keys(files).length < 1)
+            return res.send({created: true})
+
+          const idClub = result.rows[0].idclub;
+          const randStr = crypto.randomBytes(5).toString('hex');
+          let queryStr = `
+              UPDATE colores_club
+              SET 
+          `
+          let queryStrMid = ` `;
+          let queryStrEnd = ` WHERE idclub_fk = ${idClub}`;
+
+          /// queryAdicional se usará para hacer un simple select o para insertar el reglamento.
+          /// el select solo es para que no se rompa
+          let hasReglamento = false;
+          let queryAdicional = ` 
+            UPDATE club 
+            SET reglamento = `;
+
+          Object.entries(files).forEach(([key, file])=>{
+              let targetPath = `${__dirname}/../files/clubes/${idClub}/`; 
+              console.log(Object.entries(file))
+              if(key === "reglamento"){
+                  targetPath = targetPath + `files/${key}-${randStr}${getFileExtension(file.name)}`;
+                  queryAdicional += `'${targetPath}' WHERE idclub = ${idClub}`
+                  hasReglamento = true;
+              }
+              else{
+                  targetPath = targetPath + `images/colores/${key}-${randStr}${getFileExtension(file.name)}`;
+                  queryStrMid += ` ${key} = '${targetPath}', `;
+              }
+                
+              file.mv(targetPath, (err) => console.log(err))
+          })
+
+          queryStrMid = queryStrMid.replace(/,\s*$/gm, '');
+          
+          let finalQuery = queryStr + queryStrMid + queryStrEnd;
+
+          console.log(finalQuery)
+
+          client.query(finalQuery, (err, result)=>{
+              if (err){
+                console.log(err);
+                res.send({ error: 'No se realizó el registro del club' });
+                return;
+              }else{
+                  if(!hasReglamento){
+                    return res.send({ created: true});
+                  }
+
+                  //// AHORA LA QUERY PARA LA UBICACIÓN DEL REGLAMENTO /////
+                  client.query(queryAdicional, (err, ress) => {
+                    if(err)
+                      return res.send({err: 'error'})
+                  })
+
+                  return res.send({created: true})
+              }
+          })
+
+          
         }
       );
   }
@@ -286,6 +354,7 @@ const updateClubAddressFn = (req, res, client) => {
     }
   );
 }
+
 
 module.exports = { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, showClubListFn, updateClubAddressFn }
 

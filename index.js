@@ -68,7 +68,6 @@ app.use(
 // Para carga de archivos
 app.use(fileUpload({
   useTempFiles : true,
-  safeFileNames: true,
   tempFileDir : '/tmp/',
   createParentPath: true
 }));
