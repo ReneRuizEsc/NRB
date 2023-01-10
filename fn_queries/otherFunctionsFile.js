@@ -4,6 +4,19 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+const fs = require('fs');
+const crypto = require("crypto");
+
+function getFileExtension (name){
+  try {
+      let ext = name.match(/\.[^.]+$/gmi);
+
+      return ext === null ? null : ext[0];
+  } catch {
+      return name;
+  }
+}
+
 //Use this to know status of account before everything
 
 const verifyStatusFn = (req, res, client) => {
@@ -16,7 +29,7 @@ const verifyStatusFn = (req, res, client) => {
     
     client.query(
         queryStr,
-        [usuario, fotoCredencialFrontal, fotoCredencialTrasera, fotoRostro, verificacion],
+        [usuario],
         (err, result) => {
         if (err)
         {
@@ -26,7 +39,7 @@ const verifyStatusFn = (req, res, client) => {
         }
         if (result.rows.length > 0)
         {
-            res.send(result.rows[0]); //Si el usuario está verificado
+            res.send(result.rows[0]);
         }
         else
         {
@@ -39,17 +52,14 @@ const verifyStatusFn = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//User must not be registered nor be verified
+//User must not be registered nor be verified NO EXISTE
 
 const verifyUserFn = (req, res, client) => {
     const usuario = req.body.idusuario;
-    const fotoCredencialFrontal = req.body.fotofrontal;
-    const fotoCredencialTrasera = req.body.fototrasera;
-    const fotoRostro = req.body.fotorostro;
     
     const queryStr = `
-        insert into verificacion (idUsuario_FK, FotoCredencialF, FotoCredencialT, FotoRostro, Verificacion, Pendiente)
-        values ($1, $2, $3, $4, false, false)
+            INSERT INTO verificacion (idUsuario_FK, FotoCredencialF, FotoCredencialT, FotoRostro, Verificacion, Pendiente)
+            VALUES ($1, '', '', '', false, false)
         ;`
     
     client.query(
@@ -68,6 +78,51 @@ const verifyUserFn = (req, res, client) => {
         }
     );
 }
+
+const uploadCredentialPic = (req, res, client) => {
+    if(!req.session?.user || !req.session.user.idusuario)
+        res.send("Hubo un problema");
+  
+    const file = req.files;
+    const id = req.session.user.idusuario;
+    const randStr = crypto.randomBytes(5).toString('hex');
+    const fileExt = getFileExtension(file.name);
+
+    let filepath = [];
+
+    Object.entries(file).forEach(([key, value]) => {
+
+        if(key == 'fotofredencialf')
+        {
+            filepath.push(`${__dirname}/../files/users/${id}/verify/credential-F-${randStr}${fileExt}`);
+            value.mv(`${__dirname}/../files/users/${id}/verify/credential-F-${randStr}${fileExt}`, (err) => console.log(err))
+        }
+        if(key == 'fotocredencialt')
+        {
+            filepath.push(`${__dirname}/../files/users/${id}/verify/credential-T-${randStr}${fileExt}`);
+            value.mv(`${__dirname}/../files/users/${id}/verify/credential-T-${randStr}${fileExt}`, (err) => console.log(err))
+        }
+        if(key == 'fotorostro')
+        {
+            filepath.push(`${__dirname}/../files/users/${id}/verify/fotoRostro-${randStr}${fileExt}`);
+            value.mv(`${__dirname}/../files/users/${id}/verify/fotoRostro-${randStr}${fileExt}`, (err) => console.log(err))
+
+        }
+    })
+
+    let query = 'UPDATE verificacion SET fotoCredencialF = $1, fotoCredencialT = $2, fotoRostro = $3, pendiente = true WHERE idusuario = $4;';
+    client.query(query, [filepath[0], filepath[1], filepath[2], id],
+        (err, result) => {
+            if (err)
+            {
+            res.send({message: "Ha habido un problema. Intente más tarde."})
+            }
+            else
+            {
+            res.send({message: "Se ha subido la imagen con éxito."})
+            }
+        });
+  }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -164,6 +219,6 @@ const showPendingVerificationFn = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
+module.exports = { verifyStatusFn, uploadCredentialPic, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

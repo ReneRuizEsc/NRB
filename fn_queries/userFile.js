@@ -93,20 +93,48 @@ const updateUserFn = (req, res, client) => {
 
 //////////////////////////////////////////////////////////////////////////////////////////// 
 
-//Delete user with email and password
+//Delete user with email and password (only normal user)
 
-const deleteUserFn = (req, res, client) => {
+const deleteUserFn = (req, res, client) => {//EL MALDITO CASCADE DE LA MALDITA BASE DE DATOS NO FUNCIONA A PESAR DE QUE SE ENCUENTRA BIEN DECLARADO EN LAS MALDITAS RELACIONES
+    const id = req.body.idusuario;
     const email = req.body.email;
     const password = req.body.password;
   
     const queryStr = `
+        DELETE FROM direccion_usuario
+        WHERE idusuario = $3;
+
+        DELETE FROM verificacion
+        WHERE idusuario = $3;
+
+        DELETE FROM motocicleta
+        WHERE idusuario = $3;
+
+        DELETE FROM u_padecimientos
+        WHERE idusuario = $3;
+
+        DELETE FROM a_padecimientos
+        WHERE idusuario = $3;
+
+        DELETE FROM acompanante
+        WHERE idusuario = $3;
+
+        DELETE FROM puntos_evento
+        WHERE idusuario = $3;
+
+        DELETE FROM evento_Individual
+        WHERE idusuario = $3;
+
+        DELETE FROM usuario
+        WHERE idusuario = $3;
+
         DELETE FROM cuenta
         WHERE email = $1 and password = $2
       ;`
   
     client.query(
       queryStr,
-      [email, password],
+      [email, password, id],
       (err, result) => {
         if (err)
         {

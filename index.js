@@ -80,7 +80,7 @@ app.use(fileUpload({
 const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn, showClubListFn } = require("./fn_queries/clubFile");
 const { loginFn, restorePassword } = require("./fn_queries/loginFile");
 const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn } = require("./fn_queries/membersFile");
-const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn } = require("./fn_queries/otherFunctionsFile");
+const { verifyStatusFn, uploadCredentialPic, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn } = require("./fn_queries/otherFunctionsFile");
 const { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionAllergyFn, deleteCompanionAllergyFn, showCompanionAllergyFn } = require("./fn_queries/userCompanionFile");
 const { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserAllergyFn, deleteUserAllergyFn, showUserAllergyFn } = require("./fn_queries/userDataFile");
 const { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn } = require("./fn_queries/userFile");
