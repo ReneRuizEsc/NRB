@@ -21,10 +21,12 @@ const addUserFn = (req, res, client) => {
     const membresia = false;
     
     const queryStr = `
-      with first_insert as (insert into cuenta(correo, contrasena) 
-        values($1, pgp_sym_encrypt( $2, $12)) RETURNING idcuenta) 
-        insert into usuario( nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idcuenta_fk, fechanac, hasmembresia) 
-        values ( $3, pgp_sym_encrypt( $4, $12), pgp_sym_encrypt( $5, $12), $6, $7, pgp_sym_encrypt( $8, $12), pgp_sym_encrypt( $9, $12), (select idcuenta from first_insert), $10, $11)
+      with first_insert as (INSERT INTO cuenta(correo, contrasena) 
+        VALUES ($1, pgp_sym_encrypt( $2, $12)) RETURNING idcuenta),
+      second_insert as( INSERT INTO usuario( nombre, ap, am, apodo, fotoperfil, numerotelefonico, tipodesangre, idcuenta_fk, fechanac, hasmembresia) 
+        VALUES ( $3, pgp_sym_encrypt( $4, $12), pgp_sym_encrypt( $5, $12), $6, $7, pgp_sym_encrypt( $8, $12), pgp_sym_encrypt( $9, $12), (SELECT idcuenta from first_insert), $10, $11) RETURNING idUsuario)
+        INSERT INTO verificacion (idusuario_fk, fotocredencialf, fotocredencialt, fotorostro, verificacion, pendiente, clavedeelector) 
+        VALUES ((SELECT idUsuario from second_insert), '', '', '', false, false, '')
         ;`
     
     client.query(
