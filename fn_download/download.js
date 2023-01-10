@@ -13,15 +13,44 @@ const getProfilePic = (req, res, client) => {
       [idusuario], 
       (err, result)=>{
           if(err)
-            res.sendFile(pathObj.resolve(defaultPicturePath));
+            return res.sendFile(pathObj.resolve(defaultPicturePath));
           else{
 
             if(result.rows.length < 1 || result.rows[0].fotoperfil.length < 2)
                 return res.sendFile(pathObj.resolve(defaultPicturePath)); 
+            else{
+                const path = result.rows[0].fotoperfil;
+                console.log("Image path: ", path)
+                return res.sendFile(pathObj.resolve(path), (err) => err && res.sendFile(pathObj.resolve(defaultPicturePath)));
+            }
+          }
+      });
+}
 
-            const path = result.rows[0].fotoperfil;
-            console.log("Image path: ", path)
-            return res.sendFile(pathObj.resolve(path));
+const getClubLogo = (req, res, client) => {
+    const idclub = req.query.idclub;
+
+    const query = `
+      SELECT logo from colores_club WHERE idclub_fk = $1;
+    `;
+
+    client.query(
+      query, 
+      [idclub], 
+      (err, result)=>{
+          if(err)
+            return;
+          else{
+
+            if(result.rows.length < 1 || result.rows[0].logo.length < 2){
+                return;
+            }else{
+                const path = result.rows[0].logo;
+                console.log("Logo path: ", path)
+                res.sendFile(pathObj.resolve(path));
+                return;
+            }
+
           }
       });
 }
@@ -49,4 +78,4 @@ function getFileExtension(name){
     }
 }
 
-module.exports = { getProfilePic, downloadTest }
+module.exports = { getProfilePic, getClubLogo, downloadTest }
