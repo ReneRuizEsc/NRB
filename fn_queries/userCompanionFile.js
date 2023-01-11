@@ -157,26 +157,27 @@ const showUserCompanionFn = (req, res, client) => {
 
 //Add companion allergy
 
-const addCompanionAllergyFn = (req, res, client) => {
-    const usuario = req.body.usuario;
-    const alergia = req.body.alergia;
+const addCompanionIllnessFn = (req, res, client) => {
+    const idusuario = req.body.idusuario;
+    const padecimiento = req.body.padecimiento;
+    const tipo = req.body.tipo; //1: enfermedad, 2: Alergia
     
     const queryStr = `
-        INSERT INTO a_alergia (idusuario_fk, alergia)
-        values ($1, $2)
+        INSERT INTO a_padecimientos (idusuario_fk, padecimiento, tipo)
+        values ($1, $2, $3)
         ;`
     
     client.query(
         queryStr,
-        [usuario, alergia],
+        [idusuario, padecimiento, tipo],
         (err, result) => {
         if (err)
         {
             console.log(err);
-            res.send({ error: 'No se realizó la consulta' });
+            res.send({ error: 'No se realizó el registro' });
             return;
         }
-            console.log('Fue anadida la alergia del acompanante');
+            console.log('Fue anadida el padecimiento del acompanante');
             console.log(result)
             res.send({ created: true})
         }
@@ -187,26 +188,26 @@ const addCompanionAllergyFn = (req, res, client) => {
 
 //Delete companion allergy
 
-const deleteCompanionAllergyFn = (req, res, client) => {
-    const usuario = req.body.usuario;
-    const alergia = req.body.alergia;
+const deleteCompanionIllnessFn = (req, res, client) => {
+    const idusuario = req.body.idusuario;
+    const padecimiento = req.body.padecimiento;
     
     const queryStr = `
-        DELETE FROM a_alergia
-        where idusuario_fk = $1 and alergia = $2
+        DELETE FROM a_padecimientos
+        where idusuario_fk = $1 and padecimiento = $2
         ;`
     
     client.query(
         queryStr,
-        [usuario, alergia],
+        [idusuario, padecimiento],
         (err, result) => {
         if (err)
         {
             console.log(err);
-            res.send({ error: 'No fue borrada la alergia.' });
+            res.send({ error: 'No fue borrada la enfermedad.' });
             return;
         }
-            console.log('Se borró la alergia.');
+            console.log('Se borró la enfermedad.');
             console.log(result)
             res.send({ created: true})
         }
@@ -217,7 +218,7 @@ const deleteCompanionAllergyFn = (req, res, client) => {
 
 //Show all allergies from companion
 
-const showCompanionAllergyFn = (req, res, client) => {
+const showCompanionIllnessFn = (req, res, client) => {
     const usuario = req.body.usuario;
     
     const queryStr = `
@@ -237,8 +238,9 @@ const showCompanionAllergyFn = (req, res, client) => {
         }
         if (result.rows.length > 0)
         {
-            res.send(result.rows[0]);
-        }
+            console.log('Lista de enfermedades');
+            res.send(result.rows);
+            }
         else
         {
             res.send({ message: "No hay registros de alergias de usuario" });
@@ -250,6 +252,14 @@ const showCompanionAllergyFn = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionAllergyFn, deleteCompanionAllergyFn, showCompanionAllergyFn }
+module.exports = {
+    addUserCompanionFn,
+    updateUserCompanionFn,
+    deleteUserCompanionFn,
+    showUserCompanionFn,
+    addCompanionIllnessFn,
+    deleteCompanionIllnessFn,
+    showCompanionIllnessFn
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////

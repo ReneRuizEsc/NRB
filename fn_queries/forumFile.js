@@ -6,6 +6,7 @@
 
 const crypto = require("crypto");
 const { getFileExtension } = require("../generalFn/generalFn");
+const pathObj = require('path');
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -14,14 +15,14 @@ const addEntryFn = (req, res, client) => {
     const titulo = req.body.titulo;
     const mensaje = req.body.texto;
 
-    let query = `
+    const queryStr = `
     WITH asd as (SELECT idMembresia FROM miembros_club WHERE idUsuario_fk = $1)
         INSERT INTO publicacion_foro (titulo, texto, respuesta, fecha, idmmiembro_fk)
         VALUES ($2, $3, NULL, (SELECT current_date), (SELECT idMembresia FROM asd))
         ;`
 
         client.query(
-            query,
+            queryStr
             [idUsuario, titulo, mensaje],
             (err, result) => {
               if (err)
@@ -43,7 +44,7 @@ const addEntryFn = (req, res, client) => {
 const deleteEntryFn = (req, res, client) => {
     const idPublicacion = req.body.idpublicacion;
 
-    let query = `
+    const queryStr = `
         DELETE FROM fotos_foro
         WHERE idPublicacionForo_fk = $1;
 
@@ -55,7 +56,7 @@ const deleteEntryFn = (req, res, client) => {
         ;`
 
         client.query(
-            query,
+            queryStr,
             [idPublicacion],
             (err, result) => {
               if (err)
@@ -80,14 +81,14 @@ const addResponseFn = (req, res, client) => {
     const titulo = req.body.titulo;
     const mensaje = req.body.texto;
     
-    let query = `
+    const queryStr = `
     WITH asd as (SELECT idMembresia FROM miembros_club WHERE idUsuario_fk = $1), 
         INSERT INTO publicacion_foro (titulo, texto, respuesta, fecha, idmmiembro_fk)
         VALUES ($3, $4, $2, (SELECT current_date), (SELECT idMembresia FROM asd)
         ;`
 
         client.query(
-            query,
+            queryStr,
             [idUsuario, idPublicacion, titulo, mensaje],
             (err, result) => {
               if (err)
@@ -108,14 +109,14 @@ const addResponseFn = (req, res, client) => {
 const showEntryMAINListFn = (req, res, client) => {
     const idPublicacion = req.body.idPublicacion;
     
-    let query = `
+    const queryStr = `
         SELECT titulo, texto, fecha, apodo FROM publicacion_foro
         INNER JOIN miembro_club ON idMiembro_fk = idMembresia
         INNER JOIN usuario ON idUsuario_fk = idusuario WHERE respuesta = NULL
         ;`
 
         client.query(
-            query,
+            queryStr,
             [idPublicacion],
             (err, result) => {
               if (err)
@@ -136,14 +137,14 @@ const showEntryMAINListFn = (req, res, client) => {
 const showEntryResponseListFn = (req, res, client) => {
     const idPublicacion = req.body.idPublicacion;
     
-    let query = `
+    const queryStr = `
         SELECT titulo, texto, fecha, apodo FROM publicacion_foro
         INNER JOIN miembro_club ON idMiembro_fk = idMembresia
         INNER JOIN usuario ON idUsuario_fk = idusuario WHERE respuesta = $1
         ;`
 
         client.query(
-            query,
+            queryStr,
             [idPublicacion],
             (err, result) => {
               if (err)
@@ -166,12 +167,12 @@ const showEntryFilesFn =   (req, res, client) => {
     const idPublicacion = req.body.idPublicacion;
 
     let lista = [];
-    const query = `
+    const queryStr = `
       SELECT archivo from archivos_foro WHERE idPublicacionForo_fk = $1;
     `;
 
     client.query(
-      query, 
+      queryStr, 
       [idPublicacion], 
       (err, result)=>{
           if(err)
@@ -200,12 +201,12 @@ const showEntryPicturesFn =  (req, res, client) => {
     const idPublicacion = req.body.idPublicacion;
 
     let lista = [];
-    const query = `
+    const queryStr = `
       SELECT archivo from fotos_foro WHERE idPublicacionForo_fk = $1;
     `;
 
     client.query(
-      query, 
+      queryStr, 
       [idPublicacion], 
       (err, result)=>{
           if(err)
@@ -294,10 +295,11 @@ const addPictureForumFn = (req, res, client) => {
         }
     })
 
+    const queryStr = 'INSERT INTO fotos_foro (idPublicacionForo_fk, foto) VALUES ($1, $2)';
+
     for (let i = 0; i < filepath.length; i++)
     {
-        let query = 'INSERT INTO fotos_foro (idPublicacionForo_fk, foto) VALUES ($1, $2)';
-        client.query(query, [idPublicacion, filepath[i]],
+        client.query(queryStr, [idPublicacion, filepath[i]],
         (err, result) => {
             if (err)
             {
@@ -315,13 +317,6 @@ const addPictureForumFn = (req, res, client) => {
 
 }
 
-const printForumFn = (req, res, client) => {
-    const dirArchivo = req.query.dirArchivo;
-    const path = `${dirArchivo}`;
-    
-    return res.sendFile(pathObj.resolve(path), (err) => err && console.log("Se perdió la respuesta en el camino"));
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = { addEntryFn, 
@@ -333,7 +328,6 @@ module.exports = { addEntryFn,
     showEntryPicturesFn,
     addPictureForumFn,
     addFileForumFn,
-    printForumFn
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

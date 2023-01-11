@@ -132,10 +132,22 @@ function getFileExtension(name){
         return name;
     }
 }
+//Santo Grial
+const printGeneralFileFn = (req, res, client) => {
+  if(!req.session?.user)
+  res.send("Hubo un problema con la sesion");
+    const dirFILE = req.query.dirFILE;
+    const path = `${dirFILE}`;
+    
+    return res.sendFile(pathObj.resolve(path), (err) => err && console.log("Se perdió la respuesta en el camino"));
+}
+//Santo Grial
 
 module.exports = { 
     getProfilePic, 
     getClubLogo,
     getClubLogoNombre,
     getClubLogoUbic, 
-    downloadTest }
+    downloadTest,
+    printGeneralFileFn
+  }

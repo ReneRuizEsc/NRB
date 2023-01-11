@@ -153,26 +153,27 @@ const showUserAddressFn = (req, res, client) => {
 
 //Add user allergy
 
-const addUserAllergyFn = (req, res, client) => {
-    const usuario = req.body.idusuario;
-    const alergia = req.body.alergia;
+const addUserIllnessFn = (req, res, client) => {
+    const idusuario = req.body.idusuario;
+    const padecimiento = req.body.padecimiento;
+    const tipo = req.body.padecimiento; //1: Enfermedad, 2: Alergia
     
     const queryStr = `
-        INSERT INTO u_alergia (idusuario_fk, alergia)
-        values ($1, $2)
+        INSERT INTO u_padecimientos (idusuario_fk, padecimiento, tipo)
+        VALUES ($1, $2, $3)
         ;`
     
     client.query(
         queryStr,
-        [usuario, alergia],
+        [idusuario, padecimiento, tipo],
         (err, result) => {
         if (err)
         {
             console.log(err);
-            res.send({ error: 'No fue registrada la alergia' });
+            res.send({ error: 'No fue registrada la enfermedad' });
             return;
         }
-            console.log('Alergia de usuario anadida');
+            console.log('Enfermedad de usuario anadida');
             console.log(result)
             res.send({ created: true})
         }
@@ -183,26 +184,26 @@ const addUserAllergyFn = (req, res, client) => {
 
 //Delete user allergy
 
-const deleteUserAllergyFn = (req, res, client) => {
-    const usuario = req.body.idusuario;
-    const alergia = req.body.alergia;
+const deleteUserIllnessFn = (req, res, client) => {
+    const idusuario = req.body.idusuario;
+    const padecimiento = req.body.padecimiento;
     
     const queryStr = `
-        DELETE FROM u_alergia
-        WHERE idusuario_fk = $1 and alergia = $2
+        DELETE FROM u_padecimientos
+        WHERE idusuario_fk = $1 and padecimiento = $2
         ;`
     
     client.query(
         queryStr,
-        [usuario, alergia],
+        [idusuario, padecimiento],
         (err, result) => {
         if (err)
         {
             console.log(err);
-            res.send({ error: 'No fue borrada la alergia' });
+            res.send({ error: 'No fue borrada la enfermedad' });
             return;
         }
-            console.log('Alergia de usuario eliminada');
+            console.log('Enfermedad del usuario eliminada');
             console.log(result)
             res.send({ created: true})
         }
@@ -211,35 +212,50 @@ const deleteUserAllergyFn = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-//Show all user allergies
+//Show all user illness
 
-const showUserAllergyFn = (req, res, client) => {
-    const usuario = req.body.idusuario;
+const showUserIllnessFn = (req, res, client) => {
+    const idusuario = req.body.idusuario;
     
     const queryStr = `
-        SELECT * FROM u_alergia
+        SELECT padecimiento FROM u_padecimientos
         WHERE idusuario_fk = $1
         ;`
     
     client.query(
         queryStr,
-        [usuario],
+        [idusuario],
         (err, result) => {
         if (err)
         {
             console.log(err);
-            res.send({ error: 'No fue registrada la alergia' });
+            res.send({ error: 'No se encontraron enfermedades' });
             return;
         }
-        console.log('Alergia de usuario anadida');
-        console.log(result)
-        res.send({ created: true})
+        if (result.rows.length > 0)
+        {
+            console.log('Lista de enfermedades');
+            res.send(result.rows);
+            }
+        else
+        {
+            res.send({ message: "No hay registros de alergias de usuario" });
+            console.log(result);
+        }
         }
     );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserAllergyFn, deleteUserAllergyFn, showUserAllergyFn }
+module.exports = {
+    addUserAddressFn,
+    updateUserAddressFn,
+    deleteUserAddressFn,
+    showUserAddressFn,
+    addUserIllnessFn,
+    deleteUserIllnessFn,
+    showUserIllnessFn
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
