@@ -1,3 +1,14 @@
+////////////////////////////////////////////////////////////////////////////////////////////
+
+//Forum add, delete, addResponse, addMultipleFiles, addMultiplePhotos, showIndividualResponse, showMainList, showResponseList, showFiles, showImages
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+const crypto = require("crypto");
+const { getFileExtension } = require("../generalFn/generalFn");
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
 const addEntryFn = (req, res, client) => {
     const idUsuario = req.body.idusuario;
     const titulo = req.body.titulo;
@@ -26,6 +37,8 @@ const addEntryFn = (req, res, client) => {
           );
 
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
 
 const deleteEntryFn = (req, res, client) => {
     const idPublicacion = req.body.idpublicacion;
@@ -59,6 +72,8 @@ const deleteEntryFn = (req, res, client) => {
     
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+
 const addResponseFn = (req, res, client) => {
     const idUsuario = req.body.idusuario;//El que responde
     const idPublicacion = req.body.idpublicacion;//A donde responde
@@ -88,7 +103,9 @@ const addResponseFn = (req, res, client) => {
           );
 }
 
-const showEntryMAINListFn = (req, res, client) => {//////////////////////////////////////////////////GET
+////////////////////////////////////////////////////////////////////////////////////////////
+
+const showEntryMAINListFn = (req, res, client) => {
     const idPublicacion = req.body.idPublicacion;
     
     let query = `
@@ -114,6 +131,8 @@ const showEntryMAINListFn = (req, res, client) => {/////////////////////////////
           );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+
 const showEntryResponseListFn = (req, res, client) => {
     const idPublicacion = req.body.idPublicacion;
     
@@ -133,8 +152,6 @@ const showEntryResponseListFn = (req, res, client) => {
                 res.send({ error: 'No se realizó la consulta de respuestas' });
                 return;
               }
-
-              //showEntryFilesFn(req, res, client);//await Quizá se muere por mandar varias respuestas
       
               console.log(result)
               res.send({ created: true})
@@ -142,14 +159,18 @@ const showEntryResponseListFn = (req, res, client) => {
           );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+
 const showEntryFilesFn =   (req, res, client) => {
+
     const idPublicacion = req.body.idPublicacion;
 
+    let lista = [];
     const query = `
-      SELECT archivo from archivo_foro WHERE idPublicacionForo_fk = $1;
+      SELECT archivo from archivos_foro WHERE idPublicacionForo_fk = $1;
     `;
 
-    /* client.query(
+    client.query(
       query, 
       [idPublicacion], 
       (err, result)=>{
@@ -162,22 +183,52 @@ const showEntryFilesFn =   (req, res, client) => {
             }else{
                 for(let i = 0; i < result.rows.length; i++)
                 {   
-                    //const path = result.rows[i].foto;
-                    //console.log("Logo path: ", path)
-                    //res.sendFile(pathObj.resolve(path));//Lo matará?
+                    lista.push(result.rows[i].archivo);
+                    console.log("Lista de resultados enviada");
+                    res.send(lista);
                 }
                 return;
             }
-
           }
-      });*/
+      });
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
 
 const showEntryPicturesFn =  (req, res, client) => {
 
+    const idPublicacion = req.body.idPublicacion;
+
+    let lista = [];
+    const query = `
+      SELECT archivo from fotos_foro WHERE idPublicacionForo_fk = $1;
+    `;
+
+    client.query(
+      query, 
+      [idPublicacion], 
+      (err, result)=>{
+          if(err)
+            return;
+          else{
+
+            if(result.rows.length < 1){
+                return;
+            }else{
+                for(let i = 0; i < result.rows.length; i++)
+                {   
+                    lista.push(result.rows[i].foto);
+                    console.log("Lista de fotos enviada");
+                    res.send(lista);
+                }
+                return;
+            }
+          }
+      });
 }
 
-//Ver que pedo con las múltiples entradas 
+////////////////////////////////////////////////////////////////////////////////////////////
+
 const addFileForumFn = (req, res, client) => {
     if(!req.session?.user || !req.session.user.idusuario)
     res.send("Hubo un problema");
@@ -220,6 +271,8 @@ const addFileForumFn = (req, res, client) => {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+
 const addPictureForumFn = (req, res, client) => {
     if(!req.session?.user || !req.session.user.idusuario)
     res.send("Hubo un problema");
@@ -243,7 +296,7 @@ const addPictureForumFn = (req, res, client) => {
 
     for (let i = 0; i < filepath.length; i++)
     {
-        let query = 'INSERT INTO fotoss_foro (idPublicacionForo_fk, foto) VALUES ($1, $2)';
+        let query = 'INSERT INTO fotos_foro (idPublicacionForo_fk, foto) VALUES ($1, $2)';
         client.query(query, [idPublicacion, filepath[i]],
         (err, result) => {
             if (err)
@@ -261,3 +314,26 @@ const addPictureForumFn = (req, res, client) => {
     res.send({ created: true})
 
 }
+
+const printForumFn = (req, res, client) => {
+    const dirArchivo = req.query.dirArchivo;
+    const path = `${dirArchivo}`;
+    
+    return res.sendFile(pathObj.resolve(path), (err) => err && console.log("Se perdió la respuesta en el camino"));
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+module.exports = { addEntryFn, 
+    deleteEntryFn,
+    addResponseFn,
+    showEntryMAINListFn,
+    showEntryResponseListFn,
+    showEntryFilesFn,
+    showEntryPicturesFn,
+    addPictureForumFn,
+    addFileForumFn,
+    printForumFn
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
