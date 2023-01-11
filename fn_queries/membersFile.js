@@ -4,6 +4,10 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+var nodemailer = require('nodemailer');
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
 //Solicitar unirse a club
 
 const newMemberClubFn = (req, res, client) => {
@@ -38,6 +42,7 @@ const newMemberClubFn = (req, res, client) => {
 
 const newMemberClubAcceptFn = (req, res, client) => {
   const idusuario = req.body.idusuario;
+  const idclub = req.body.idclub;
 
   const queryStr = `
       UPDATE miembro_club
@@ -49,6 +54,8 @@ const newMemberClubAcceptFn = (req, res, client) => {
       VALUES ($1, 6)
       ;`
 
+      req.session.user = {...req.session.user, cargo: 6 };
+
   client.query(
     queryStr,
     [idusuario],
@@ -59,6 +66,44 @@ const newMemberClubAcceptFn = (req, res, client) => {
         res.send({ error: 'No se registró la respuesta a la solicitud' });
         return;
       }
+
+      let nombreclub;
+      let email;
+
+      client.query('SELECT nombre FROM club where idclub = $1', idclub, (err, resp) =>
+      {
+        nombreclub = resp.rows[0].nombre;
+      });
+
+      client.query('SELECT correo FROM cuenta INNER JOIN usuario ON idusuario = idcuenta_fk where idcuenta = $1', idusuario, (err, resp) =>
+      {
+        correo = resp.rows[0].correo;
+      });
+
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'ttmotosescom@gmail.com',
+          pass: 'aixmgdgdafdofbdc'
+        }
+      });
+
+      let mailOptions = {
+        from: 'ttmotosescom@gmail.com',
+        to: email,
+        subject: 'Aceptado en club. NiceRider',
+        text: 'Su solicitud de unirse al club ' + nombre + ' ha sido aceptada '
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+
+      res.send({message: "ok"});
 
       console.log(result)
       res.send({ created: true})
