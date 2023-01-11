@@ -36,7 +36,11 @@ const addUserFn = (req, res, client) => {
         if (err)
         {
             console.log(err);
-            res.send({ error: 'No fue realizado el registro' });
+            if(err.code === '23505')
+              res.send({ error: 'El correo electrónico ya está registrado.' });
+            else
+              res.send({ error: 'Hubo un problema. Intente más tarde.' });
+
             return;
         }
           console.log('Se realizó el registro del perfil');

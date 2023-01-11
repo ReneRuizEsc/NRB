@@ -125,7 +125,11 @@ const addClubFn = (req, res, client) => {
             }else{
                 console.log(result)
                 if(!hasReglamento){
-                  console.log("CLUB CREADO SIN REGLAMENTO")
+                  console.log("CLUB CREADO SIN REGLAMENTO");
+                  req.session.user = {
+                    ...req.session.user,
+                    hasmembresia: true
+                  };
                   return res.send({ created: true, idclub: idClub});
                 }
 
@@ -139,6 +143,10 @@ const addClubFn = (req, res, client) => {
 
                   console.log("CLUB CREADO con REGLAMENTO")
                   console.log("SESIÓN: ", req.session.user)
+                  req.session.user = {
+                    ...req.session.user,
+                    hasmembresia: true
+                  }
                   return res.send({created: true, idclub: idClub})
                 })
 

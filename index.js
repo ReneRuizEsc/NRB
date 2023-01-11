@@ -181,7 +181,12 @@ app.get("/checkLogin", (req, res) => {
 
 app.post("/logout", (req, res) => {
   if (req.session.user) {
-    req.session.destroy();
+    req.session.destroy( (err) => {
+      if(err)
+        res.status(400).send('Error al cerrar sesión')
+      else
+        res.status(200).send("Ok")
+    } );
   } else {
     res.send({ isLogged: false });
   }
