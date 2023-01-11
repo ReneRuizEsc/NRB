@@ -183,7 +183,8 @@ const addFileForumFn = (req, res, client) => {
     res.send("Hubo un problema");
 
   const file = req.files.archivo;
-  const idPublicacion = req.session.user.Publicacion;
+  const idusuario = req.session.user.idusuario;
+  const idPublicacion = req.req.body.idpublicacion;
   const randStr = crypto.randomBytes(5).toString('hex');
   const fileExt = getFileExtension(file.name);
 
@@ -191,10 +192,10 @@ const addFileForumFn = (req, res, client) => {
 
     Object.entries(file).forEach(([key, value]) => {
 
-        if(key == 'foto')
+        if(key == 'archivo')
         {
-            filepath.push(`${__dirname}/../files/users/${idPublicacion}/files/archivosforo-${randStr}${fileExt}`);
-            value.mv(`${__dirname}/../files/users/${idPublicacion}/files/archivosforo-${randStr}${fileExt}`, (err) => console.log(err))
+            filepath.push(`${__dirname}/../files/users/${idusuario}/files/archivosforo-${randStr}${fileExt}`);
+            value.mv(`${__dirname}/../files/users/${idusuario}/files/archivosforo-${randStr}${fileExt}`, (err) => console.log(err))
         }
     })
 
@@ -205,7 +206,49 @@ const addFileForumFn = (req, res, client) => {
         (err, result) => {
             if (err)
             {
-                console.log("Se ha subido la imagen con éxito.")
+                console.log("No se ha subido el archivo "+ i + " con éxito.")
+            }
+            else
+            {
+                console.log("Se ha subido el archivo "+ i +" con éxito.")
+            }
+        });
+
+    }
+
+    res.send({ created: true})
+
+}
+
+const addPictureForumFn = (req, res, client) => {
+    if(!req.session?.user || !req.session.user.idusuario)
+    res.send("Hubo un problema");
+
+  const photo = req.files.foto;
+  const idusuario = req.session.user.idusuario;
+  const idPublicacion = req.req.body.idpublicacion;
+  const randStr = crypto.randomBytes(5).toString('hex');
+  const fileExt = getFileExtension(file.name);
+
+  let filepath = [];
+
+    Object.entries(photo).forEach(([key, value]) => {
+
+        if(key == 'foto')
+        {
+            filepath.push(`${__dirname}/../files/users/${idusuario}/images/fotoforo-${randStr}${fileExt}`);
+            value.mv(`${__dirname}/../files/users/${idusuario}/images/fotoforo-${randStr}${fileExt}`, (err) => console.log(err))
+        }
+    })
+
+    for (let i = 0; i < filepath.length; i++)
+    {
+        let query = 'INSERT INTO fotoss_foro (idPublicacionForo_fk, foto) VALUES ($1, $2)';
+        client.query(query, [idPublicacion, filepath[i]],
+        (err, result) => {
+            if (err)
+            {
+                console.log("No se ha subido la imagen "+ i +" con éxito.")
             }
             else
             {
@@ -217,7 +260,4 @@ const addFileForumFn = (req, res, client) => {
 
     res.send({ created: true})
 
-}
-
-const addPictureForumFn = (req, res, client) => {
 }
