@@ -105,10 +105,10 @@ app.get("/getClubLogoUbic", (req, res) => getClubLogoUbic(req, res, client))
 
 
 //Others { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
-app.post("/verifyUser", (req, res) => verifyStatusFn(req, res, client));
+app.post("/verifyStatus", (req, res) => verifyStatusFn(req, res, client));
 app.post("/verifyUser", (req, res) => verifyUserFn(req, res, client));
 app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
-app.put("/verifyAdmin", (req, res) => notVerifyAdminFn(req, res, client));
+app.put("/notverifyAdmin", (req, res) => notVerifyAdminFn(req, res, client));
 app.put("/pendingVerification", (req, res) => showPendingVerificationFn(req, res, client));
 
 //Club { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn }
