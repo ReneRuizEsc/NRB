@@ -62,11 +62,12 @@ const verifyUserFn = (req, res, client) => {
     const file = req.files;
     const id = req.session.user.idusuario;
     const randStr = crypto.randomBytes(5).toString('hex');
-    const fileExt = getFileExtension(file.name);
+    let fileExt;
 
     let filepath = [];
 
     Object.entries(file).forEach(([key, value]) => {
+      fileExt = getFileExtension(value.name);
 
         if(key == 'fotocredencialf')
         {
@@ -75,6 +76,7 @@ const verifyUserFn = (req, res, client) => {
         }
         if(key == 'fotocredencialt')
         {
+
             filepath.push(`${__dirname}/../files/users/${id}/verify/credential-T-${randStr}${fileExt}`);
             value.mv(`${__dirname}/../files/users/${id}/verify/credential-T-${randStr}${fileExt}`, (err) => console.log(err))
         }
