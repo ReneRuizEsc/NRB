@@ -42,7 +42,7 @@ const addClubFn = (req, res, client) => {
       INSERT INTO club( nombre, reglamento, presentacion) 
       values ($1, $2, $3) RETURNING idClub),
   
-    second_insert as (INSERT INTO Miembro_Club (SuscripcionMeses, FechaRenovacion, FechaIngreso, idClub_FK, idUsuario_FK) 
+    second_insert as (INSERT INTO Miembro_Club (kmrecorridos, FechaRenovacion, FechaIngreso, idClub_FK, idUsuario_FK) 
       values ($4, $5, (SELECT current_date), (select idClub from first_insert), $6) RETURNING idMembresia),
   
     third_insert as (INSERT INTO cargos(idMiembro_FK, Cargo_FK)
@@ -158,16 +158,40 @@ const addClubFn = (req, res, client) => {
     );
 }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////----------------------------------------------------------
 
   const updateClubFn = (req, res, client) => {
 
     const idclub = req.body.idclub;
     const nombre = req.body.nombreClub;
-    const reglamento = req.body.reglamento;
+    const reglamento = req.files.reglamento;
     const presentacion = req.body.presentacion;
+
+    const randStr = crypto.randomBytes(5).toString('hex');//Solucion temporal al no borrar archivos
+    const fileExt = getFileExtension(file.name);
+
+    const path =`${__dirname}/../files/club/${idclub}/files/reglamento-${randStr}${fileExt}`;
+
+    client.query('SELECT reglamento FROM club WHERE idclub = $1;', idclub, (err, result) =>
+    {
+      if(err){
+        console.log(err);
+      }
+      else{
+        try {
+          fs.unlinkSync(reglamento)//Borra el viejo
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+    })
+
+    file.mv(path, (err) => { if (err) {
+          return res.status(500).send(err); //Al subir el nuevo reglamento
+      }});
   
-      let query = `
+      const queryStr = `
         UPDATE Club
         SET nombre = $1,
         reglamento = $2,
@@ -175,24 +199,20 @@ const addClubFn = (req, res, client) => {
         where idclub = $4
         ;`
 
-      client.query(
-        query,
-        [nombre, reglamento, presentacion, idclub],
-        (err, result) => {
-          if (err)
-          {
-            console.log(err);
-            res.send({ error: 'No se realizó el cambio de datos' });
-            return;
-          }
-  
-          console.log(result)
-          res.send({ created: true})
+      client.query( queryStr, [nombre, path, presentacion, idclub], (err, result) => {
+        if (err)
+        {
+          console.log(err);
+          res.send({ error: 'No se realizó el cambio de datos' });
+          return;
         }
-      );
+
+        console.log(result)
+        res.send({ created: true})
+      });
   }
 
-////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////// Tampoco aquí se borran archivos
 
 const deleteClubFn = (req, res, client) => {
 
@@ -261,8 +281,6 @@ const deleteClubFn = (req, res, client) => {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-
-// idClub = all info of direccion_club, colores_club, club.
 
 const showClubClubFn = (req, res, client) => {
     const idclub = req.body.idclub;

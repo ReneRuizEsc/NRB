@@ -11,7 +11,7 @@ const newMemberClubFn = (req, res, client) => {
     const club = req.body.idclub;
   
     const queryStr = `
-        INSERT into miembro_club (suscripcionmeses, fecharenovacion, fechaingreso, idclub_fk, idusuario_fk, pendiente)
+        INSERT into miembro_club (kmreccorridos, fecharenovacion, fechaingreso, idclub_fk, idusuario_fk, pendiente)
         VALUES (0, '12/31/1999', '12/31/1999', $1, $2, true)
         ;`
   
@@ -96,7 +96,7 @@ const newMemberClubRejectFn = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-// 1: presidente, 2: vicepresidente, 3: sgto de armas, 4: tesorero, 5: capitán de ruta, 6: prospect, 7: miembro)
+// 1: presidente, 2: vicepresidente, 3: sgto de armas, 4: tesorero, 5: capitán de ruta, 6: prospect, 7: miembro, 8: secretario)
 
 const showMiembrosClubFn = (req, res, client) => {
   const idclub = req.body.idclub;
@@ -128,6 +128,38 @@ const showMiembrosClubFn = (req, res, client) => {
         res.send({ message: "No hay miembros del club" });
         console.log(result);
       }
+    }
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+const addAmonestacion = (req, res, client) => {
+  if(!req.session?.user || req.session.user.cargo !== 3 || req.session.user.cargo !== 1) //1: presidente, 8: secretario
+  res.send("Hubo un problema");
+  const idusuario = req.session.user.idusuario;
+  const motivo = req.body.motivo;
+  const descripcion = req.body.descripcion;
+  const idmembresia = req.body.idmembresia;
+
+  const queryStr = `
+    WITH asd as (SELECT clavedeelector FROM verificacion WHERE idUsuario_fk = $1)
+    INSERT INTO amonestaciones (fecha, motivo, descripcion, miembroclub_fk, clavedeelector)
+    VALUES ((SELECT current_date), $2, $3, $4, (SELECT clavedeelector from asd))
+    ;`
+
+  client.query(
+    queryStr,
+    [idusuario, motivo, descripcion, idmembresia],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        res.send({ error: 'No fue realizada la amonestacion' });
+        return;
+      }
+
+      res.send({ message: "Fue realizada la amonestacion" });
     }
   );
 }

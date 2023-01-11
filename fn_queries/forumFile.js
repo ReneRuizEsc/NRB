@@ -238,17 +238,19 @@ const addFileForumFn = (req, res, client) => {
   const idusuario = req.session.user.idusuario;
   const idPublicacion = req.req.body.idpublicacion;
   const randStr = crypto.randomBytes(5).toString('hex');
-  const fileExt = getFileExtension(file.name);
+  let fileExt;
 
   let filepath = [];
 
     Object.entries(file).forEach(([key, value]) => {
 
-        if(key == 'archivo')
-        {
-            filepath.push(`${__dirname}/../files/users/${idusuario}/files/archivosforo-${randStr}${fileExt}`);
-            value.mv(`${__dirname}/../files/users/${idusuario}/files/archivosforo-${randStr}${fileExt}`, (err) => console.log(err))
-        }
+      fileExt = getFileExtension(value.name);
+
+      if(key == 'archivo')
+      {
+          filepath.push(`${__dirname}/../files/users/${idusuario}/files/archivosforo-${randStr}${fileExt}`);
+          value.mv(`${__dirname}/../files/users/${idusuario}/files/archivosforo-${randStr}${fileExt}`, (err) => console.log(err))
+      }
     })
 
     for (let i = 0; i < filepath.length; i++)
@@ -282,17 +284,19 @@ const addPictureForumFn = (req, res, client) => {
   const idusuario = req.session.user.idusuario;
   const idPublicacion = req.req.body.idpublicacion;
   const randStr = crypto.randomBytes(5).toString('hex');
-  const fileExt = getFileExtension(file.name);
+  let fileExt;
 
   let filepath = [];
 
     Object.entries(photo).forEach(([key, value]) => {
 
-        if(key == 'foto')
-        {
-            filepath.push(`${__dirname}/../files/users/${idusuario}/images/fotoforo-${randStr}${fileExt}`);
-            value.mv(`${__dirname}/../files/users/${idusuario}/images/fotoforo-${randStr}${fileExt}`, (err) => console.log(err))
-        }
+      fileExt = getFileExtension(value.name);
+
+      if(key == 'foto')
+      {
+          filepath.push(`${__dirname}/../files/users/${idusuario}/images/fotoforo-${randStr}${fileExt}`);
+          value.mv(`${__dirname}/../files/users/${idusuario}/images/fotoforo-${randStr}${fileExt}`, (err) => console.log(err))
+      }
     })
 
     const queryStr = 'INSERT INTO fotos_foro (idPublicacionForo_fk, foto) VALUES ($1, $2)';

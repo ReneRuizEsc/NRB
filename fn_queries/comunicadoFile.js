@@ -11,10 +11,8 @@ const fs = require('fs');
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-// Debe ser usuario verificado && No pertenece a algun club -> Queda asignado como presidente
-
 const addComunicadoFn = (req, res, client) => {
-  if(!req.session?.user || req.session.user.cargo !== 1 || req.session.user.cargo !== 2)
+  if(!req.session?.user || req.session.user.cargo !== 8 || req.session.user.cargo !== 1) //1: presidente, 8: secretario
   res.send("Hubo un problema");
 
     const idclub = req.body.idclub;
@@ -266,11 +264,13 @@ const addComunicadoFilesFn = (req, res, client) => {
   const idcomunicado = req.body.idcomunicado;
   const archivo = req.body.archivo;
   const randStr = crypto.randomBytes(5).toString('hex');
-  const fileExt = getFileExtension(file.name);
+  let fileExt;
 
   let filepath = [];
 
   Object.entries(archivo).forEach(([key, value]) => {
+
+    fileExt = getFileExtension(value.name);
 
     if(key == 'archivo')
     {
