@@ -23,7 +23,8 @@ const loginFn = (req, res, client) => {
       pgp_sym_decrypt(tipodesangre::bytea, $3) as tipodesangre,
       idusuario, fechanac, hasmembresia,
       tipocuenta,
-      verificacion
+      verificacion,
+      pendiente
       FROM usuario 
       INNER JOIN cuenta ON idcuenta = idcuenta_fk AND Correo = $1 AND pgp_sym_decrypt(contrasena::bytea, $3) = $2
       INNER JOIN verificacion ON idusuario_fk = idusuario

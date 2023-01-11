@@ -321,6 +321,21 @@ const showClubClubFn = (req, res, client) => {
 
 const showUserClubFn = (req, res, client) => {
     const user = req.body.idusuario;
+
+    client.query('SELECT cargo_fk FROM cargos INNER JOIN miembro_club ON idmiembro_fk = idMembresia INNER JOIN usuario ON idUsuario_fk = idUsuario WHERE idUsuario = $1',
+    user, (err, result) => {
+      if(err)
+      {
+        console.log("Error en la consulta para obtener cargo");
+      }
+      if(result.rows.length > 0){
+          console.log("Cargo añadido a la sesion");
+          req.session.user = {...req.session.user, cargo: result.rows[0] };
+      }
+      else{
+          req.session.user = {...req.session.user, cargo: -1 };
+      }
+    });
   
     const queryStr = `
       select * from miembro_club
