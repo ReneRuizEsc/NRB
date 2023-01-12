@@ -10,11 +10,16 @@ const { getFileExtension } = require("../generalFn/generalFn");
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 const addClubFn = (req, res, client) => {
-  if(!req.session?.user || req.session.user.verificacion !== TRUE) //El usuario no está verificado
-  res.send("El usuario no está verificado");
+  if(!req.session?.user || req.session.user.verificacion !== true) //El usuario no está verificado
+  { res.send("El usuario no está verificado");
+    return;
+  }
 
-  if(req.session.user.hasmembresia == TRUE) //El usuario ya pertenece a un club
-  res.send("El usuario ya pertenece a un club");
+  if(req.session.user.hasmembresia == true) //El usuario ya pertenece a un club
+  { 
+    res.send("El usuario ya pertenece a un club");
+    return;
+  }
 
   const idusuario = req.session.user.idusuario;
   const nombre = req.body.nombreClub;
@@ -145,15 +150,17 @@ const addClubFn = (req, res, client) => {
                     console.log("ERROR AL AGREGAR EL REGLAMENTO")
 
                     return res.send({err: 'error'})
+                  }else{
+                    console.log("CLUB CREADO con REGLAMENTO")
+                    console.log("SESIÓN: ", req.session.user)
+                    req.session.user = {
+                      ...req.session.user,
+                      hasmembresia: true
+                    }
+                    return res.send({created: true, idclub: idClub})
+
                   }
 
-                  console.log("CLUB CREADO con REGLAMENTO")
-                  console.log("SESIÓN: ", req.session.user)
-                  req.session.user = {
-                    ...req.session.user,
-                    hasmembresia: true
-                  }
-                  return res.send({created: true, idclub: idClub})
                 })
 
             }
