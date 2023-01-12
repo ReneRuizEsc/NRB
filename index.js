@@ -185,6 +185,17 @@ app.post("/showUserEventPoints", (req, res) => showUserEventPointsFn(req, res, c
 //UPLOAD
 app.post("/uploadProfilePic", (req, res) => uploadProfilePic(req, res, client));
 
+//Forum
+app.post("/addEntry", (req, res) => addEntryFn(req, res, client));
+app.post("/deleteEntry", (req, res) => deleteEntryFn(req, res, client));
+app.post("/addResponse", (req, res) => addResponseFn(req, res, client));
+app.post("/showMainList", (req, res) => showEntryMAINListFn(req, res, client));
+app.post("/showEntryResponseList", (req, res) => showEntryResponseListFn(req, res, client));
+app.post("/showEntryFiles", (req, res) => showEntryFilesFn(req, res, client));
+app.post("/showEntryPictures", (req, res) => showEntryPicturesFn(req, res, client));
+app.post("/addPictureForum", (req, res) => addPictureForumFn(req, res, client));
+app.post("/addFileForum", (req, res) => addFileForumFn(req, res, client));
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 app.get("/checkLogin", (req, res) => {

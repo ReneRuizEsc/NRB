@@ -126,6 +126,16 @@ const showEntryMAINListFn = (req, res, client) => {
                 res.send({ error: 'No se realizó la respuesta en el foro' });
                 return;
               }
+              else{
+                if(result.rows.length > 0)
+                {
+                  res.send(result.rows);
+                }
+                else
+                {
+                  res.send({ error: 'No hay registros en el foro' });
+                }
+              }
       
               console.log(result)
               res.send({ created: true})
