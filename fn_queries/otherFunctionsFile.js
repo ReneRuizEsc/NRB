@@ -7,16 +7,7 @@
 const fs = require('fs');
 const crypto = require("crypto");
 const pathObj = require('path');
-
-function getFileExtension (name){
-  try {
-      let ext = name.match(/\.[^.]+$/gmi);
-
-      return ext === null ? null : ext[0];
-  } catch {
-      return name;
-  }
-}
+const { getFileExtension } = require("../generalFn/generalFn");
 
 //Use this to know status of account before everything
 
