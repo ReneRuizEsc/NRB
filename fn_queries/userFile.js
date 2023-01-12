@@ -164,8 +164,8 @@ const showUserFn = (req, res, client) => {
   
     client.query(`
         SELECT nombre, 
-        pgp_sym_decrypt(ap::bytea, $2) as ap
-        pgp_sym_decrypt(am::bytea, $2) as am
+        pgp_sym_decrypt(ap::bytea, $2) as ap,
+        pgp_sym_decrypt(am::bytea, $2) as am,
         apodo,
         pgp_sym_decrypt(numerotelefonico::bytea, $2) as numerotelefonico,
         pgp_sym_decrypt(tipodesangre::bytea, $2) as tipodesangre,
