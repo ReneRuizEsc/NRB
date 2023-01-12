@@ -208,7 +208,7 @@ const showUserEventListFn = (req, res, client) => {
   
         if (result.rows.length > 0)
         {
-          res.send(result.rows[0]);
+          res.send(result.rows);
         }
         else
         {
