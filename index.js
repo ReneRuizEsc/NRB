@@ -80,7 +80,7 @@ const { loginFn, restorePassword } = require("./fn_queries/loginFile");
 //Members
 const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion } = require("./fn_queries/membersFile");
 //Other
-const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro } = require("./fn_queries/otherFunctionsFile");
+const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro, allUsers } = require("./fn_queries/otherFunctionsFile");
 //Companion
 const { addUserCompanionFn, updateUserCompanionFn, updateProfilePicCompanion, deleteUserCompanionFn, showUserCompanionFn, addCompanionIllnessFn, deleteCompanionIllnessFn, showCompanionIllnessFn } = require("./fn_queries/userCompanionFile");
 //UserData
@@ -127,6 +127,7 @@ app.post("/verifyUser", (req, res) => verifyUserFn(req, res, client));
 app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
 app.put("/notverifyAdmin", (req, res) => notVerifyAdminFn(req, res, client));
 app.put("/pendingVerification", (req, res) => showPendingVerificationFn(req, res, client));
+app.put("/allUsers", (req, res) => allUsers(req, res, client));
 
 //Club { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn }
 app.post("/createClub", (req, res) => addClubFn(req, res, client));

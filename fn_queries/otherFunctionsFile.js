@@ -396,8 +396,47 @@ const getFotoRostro = (req, res, client) => {
       });
 }
 
+const allUsers = (req, res, client) => {
+
+  const key = 'QxiE+JMOl7PTGP8rDIwhew==';
+
+  const queryStr = `
+      SELECT apodo, correo, nombre, 
+      pgp_sym_decrypt(numerotelefonico::bytea, $1) as numerotelefonico, 
+      hasmembresia,
+      tipocuenta,
+      verificacion,
+      pendiente
+      FROM usuario 
+      INNER JOIN cuenta ON idcuenta = idcuenta_fk
+      INNER JOIN verificacion ON idusuario_fk = idusuario
+      ;
+      `;
+
+  client.query(
+    queryStr,
+    [key],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        return res.send({ error: err });
+      }
+
+      if (result.rows.length > 0)
+      {
+        return res.send(result.rows);
+      } else
+      {
+        res.send({ message: "No hay registros" });
+        return console.log("email: " + email);
+      }
+    }
+  );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro }
+module.exports = { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro, allUsers }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
