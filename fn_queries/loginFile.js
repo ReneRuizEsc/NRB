@@ -62,7 +62,7 @@ const restorePassword = (req, res, client) => {
   const key = 'QxiE+JMOl7PTGP8rDIwhew==';
 
   const query = `
-    SELECT pgp_sym_decrypt(contrasena::bytea, $2) FROM cuenta
+    SELECT pgp_sym_decrypt(contrasena::bytea, $2) as contrasena FROM cuenta
     WHERE Correo = $1
   ;`
 
