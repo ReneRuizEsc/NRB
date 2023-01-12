@@ -377,7 +377,7 @@ const showUserClubFn = async (req, res, client) => {
     }
     else{
       res.send({ message: "" });
-      console.log(result2);
+      console.log("No se halló info del club del usuario");
     }
   } catch (error) {
       console.log(err);
