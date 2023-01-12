@@ -187,7 +187,7 @@ const addComunicadoPicturesFn = (req, res, client) => {
 
     const idClub = req.body.idclub;
     const idcomunicado = req.body.idcomunicado;
-    const photo = req.files.foto;
+    const photo = req.files;
     const randStr = crypto.randomBytes(5).toString('hex');
     const fileExt = getFileExtension(file.name);
 
@@ -264,7 +264,7 @@ const addComunicadoFilesFn = (req, res, client) => {
 
   const idClub = req.body.idclub;
   const idcomunicado = req.body.idcomunicado;
-  const archivo = req.body.archivo;
+  const archivo = req.body;
   const randStr = crypto.randomBytes(5).toString('hex');
   let fileExt;
 

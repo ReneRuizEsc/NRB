@@ -8,14 +8,26 @@
 
 const addUserCompanionFn = (req, res, client) => {
     const key = 'QxiE+JMOl7PTGP8rDIwhew==';
-    const usuario = req.body.idusuario;
+    const idusuario = req.body.idusuario;
     const nombre = req.body.nombre;
     const ap = req.body.ap;
     const am = req.body.am;
     const apodo = req.body.apodo;
-    const fotoperfil = req.body.fotoperfil;
+    const foto = req.files;
     const tiposangre = req.body.tipodesangre;
     const numerotelefonico = req.body.numerotelefonico;
+
+    const randStr = crypto.randomBytes(5).toString('hex');
+    const fileExt = getFileExtension(file.name);
+
+    const path =`${__dirname}/../files/users/${idusuario}/images/profileCompa-${randStr}${fileExt}`;
+
+    foto.mv(path, (err) => {
+        if (err)
+        {
+            return res.status(500).send(err);
+        }
+        console.log("se ha subido la foto de perfil")})
     
     const queryStr = `
         INSERT into acompanate (idusuario_fk, nombre, ap, am, apodo, fotoperfil, tipodesangre, numerotelefonico)
@@ -24,7 +36,7 @@ const addUserCompanionFn = (req, res, client) => {
     
     client.query(
         queryStr,
-        [usuario, nombre, ap, am, apodo, fotoperfil, tiposangre, numerotelefonico, key],
+        [idusuario, nombre, ap, am, apodo, path, tiposangre, numerotelefonico, key],
         (err, result) => {
         if (err)
         {
@@ -83,12 +95,76 @@ const updateUserCompanionFn = (req, res, client) => {
     );
 }
 
+const updateProfilePicCompanion = (req, res, client) => {
+
+    if(!req.session?.user || !req.session.user.idusuario)
+      res.send("Hubo un problema");
+  
+    const file = req.files.image;
+    const id = req.session.user.idusuario;
+    const randStr = crypto.randomBytes(5).toString('hex');
+    const fileExt = getFileExtension(file.name);
+  
+    const path =`${__dirname}/../files/images/users/${id}/profile-${randStr}${fileExt}`;
+  
+    client.query(
+      `SELECT fotoperfil FROM acompanante WHERE idusuario_fk = $1;`,
+      [id],
+      (err, result) => {
+          try {
+            fs.unlinkSync(result.rows[0].fotoperfil)
+            console.log("Old profile picture deleted");
+          } catch (error) {
+            console.log(error);
+          }
+  
+          file.mv(path, (err) => {
+              if (err)
+              {
+                  return res.status(500).send(err);
+              }
+              console.log("se ha subido la imagen")
+        
+              client.query(
+                  `UPDATE acompanante
+                      SET fotoperfil = $1
+                      WHERE idusuario_fk = $2
+                      ;`,
+                  [path, id],
+                  (err, result) => {
+                    if (err)
+                    {
+                      res.send({message: "Ha habido un problema. Intente más tarde."})
+                    }
+                    else
+                    {
+                      res.send({message: "Se ha subido la imagen con éxito."})
+                    }
+                  }
+                );
+          });
+  
+      }
+    )
+  
+  }
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 //Delete companion
 
 const deleteUserCompanionFn = (req, res, client) => {
     const usuario = req.body.idusuario;
+
+    client.query('SELECT fotoperfil FROM acompanante WHERE idusuario_fk = $1;',
+        [usuario],
+        (err, result) => {
+            try {
+              fs.unlinkSync(result.rows[0].fotoperfil)
+              console.log("Old profile picture deleted");
+            } catch (error) {
+              console.log(error);
+            }})
     
     const queryStr = `
         DELETE FROM A_PADECIMIENTOS
