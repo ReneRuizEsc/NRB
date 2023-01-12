@@ -11,7 +11,7 @@ const fs = require('fs');
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const addComunicadoFn = (req, res, client) => {
+const addComunicadoFn = (req, res, client) => { //AQUI FALTARÍA LA APROBACIÓN DEL PRESIDENTE
   if(!req.session?.user || req.session.user.cargo !== 8 || req.session.user.cargo !== 1) //1: presidente, 8: secretario
   res.send("Hubo un problema");
 
@@ -41,7 +41,9 @@ const addComunicadoFn = (req, res, client) => {
       );
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+  if(!req.session?.user || req.session.user.cargo !== 1 || req.session.user.cargo !== 2)//Presidente o vicepresidente
+    res.send("Hubo un problema");
 
   const updateComunicadoFn = (req, res, client) => {
     if(!req.session?.user || req.session.user.cargo !== 1 || req.session.user.cargo !== 2)
@@ -78,6 +80,8 @@ const addComunicadoFn = (req, res, client) => {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 const deleteComunicadoFn = (req, res, client) => { //De momento no se borran los archivos xd
+  if(!req.session?.user || req.session.user.cargo !== 1 || req.session.user.cargo !== 2)//Presidente o vicepresidente
+    res.send("Hubo un problema");
 
   const idcomunicado = req.body.idcomunicado;
 

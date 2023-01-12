@@ -41,7 +41,8 @@ const newMemberClubFn = (req, res, client) => {
 //Aceptar miembro
 
 const newMemberClubAcceptFn = (req, res, client) => {
-  const idusuario = req.body.idusuario;
+  const idusuario = req.body.idusuario;//del usuario aceptado
+  const idmembresia = req.body.idmembresia;
   const idclub = req.body.idclub;
 
   const queryStr = `
@@ -50,15 +51,19 @@ const newMemberClubAcceptFn = (req, res, client) => {
       fechaingreso = (select current_date)
       WHERE idusuario_fk = $1;
 
-      INSERT INTO cargos (idMiembro_FK, Cargo_FK)
-      VALUES ($1, 6)
-      ;`
+      UPDATE usuario
+      SET hasmembresia = TRUE
+      WHERE idUsuario = $1;
 
-      req.session.user = {...req.session.user, cargo: 6 };
+      INSERT INTO cargos (idMiembro_FK, Cargo_FK)
+      VALUES ($2, 7)
+      ;`;//6 es prospect, 7 es miembro
+
+      req.session.user = {...req.session.user, cargo: 7 };
 
   client.query(
     queryStr,
-    [idusuario],
+    [idusuario, idmembresia],
     (err, result) => {
       if (err)
       {

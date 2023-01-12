@@ -73,24 +73,34 @@ app.use(fileUpload({
 }));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-
-//const {  } = require("./fn_queries/"); No borres esta wea
-
-const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn, showClubListFn } = require("./fn_queries/clubFile");
+//Club
+const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, showClubListFn, updateClubAddressFn, updateClubRanksFn, missingRanksFn } = require("./fn_queries/clubFile");
+//Login
 const { loginFn, restorePassword } = require("./fn_queries/loginFile");
+//Members
 const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn } = require("./fn_queries/membersFile");
-const { verifyStatusFn, uploadCredentialPic, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn } = require("./fn_queries/otherFunctionsFile");
-const { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionAllergyFn, deleteCompanionAllergyFn, showCompanionAllergyFn } = require("./fn_queries/userCompanionFile");
-const { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserAllergyFn, deleteUserAllergyFn, showUserAllergyFn } = require("./fn_queries/userDataFile");
+//Other
+const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro } = require("./fn_queries/otherFunctionsFile");
+//Companion
+const { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionIllnessFn, deleteCompanionIllnessFn, showCompanionIllnessFn } = require("./fn_queries/userCompanionFile");
+//UserData
+const { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserIllnessFn, deleteUserIllnessFn, showUserIllnessFn } = require("./fn_queries/userDataFile");
+//User
 const { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn } = require("./fn_queries/userFile");
+//Moto
 const { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn } = require("./fn_queries/userMotorcycleFile");
+//UserEvent
 const { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn } = require("./fn_queries/userEventFile");
+//Upload
 const { uploadProfilePic } = require("./fn_upload/uploadFn");
+//Download
 const { getProfilePic, getClubLogo, downloadTest, getClubLogoNombre, getClubLogoUbic } = require("./fn_download/download");
+//Comunicado
+const { addComunicadoFn, updateComunicadoFn, deleteComunicadoFn, showComunicadoFn, showComunicadoListFn, addComunicadoPicturesFn, deleteComunicadoPicturesFn, addComunicadoFilesFn, deleteComunicadoFilesFn } = require("./fn_queries/comunicadoFile");
+//Forum
+const { addEntryFn, deleteEntryFn, addResponseFn, showEntryMAINListFn, showEntryResponseListFn, showEntryFilesFn, showEntryPicturesFn, addPictureForumFn, addFileForumFn } = require("./fn_queries/forumFile");
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-
-//app.("/", (req, res) => (req, res, client)); Tampoco esta
 
 //Login
 app.post("/login", (req, res) => loginFn(req, res, client)); //email, password
@@ -126,23 +136,23 @@ app.post("/newMemberClubAccept", (req, res) => newMemberClubAcceptFn(req, res, c
 app.post("/newMemberClubReject", (req, res) => newMemberClubRejectFn(req, res, client));
 app.post("/infoClubMembers", (req, res) => showMiembrosClubFn(req, res, client));
 
-//UserCompanion { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionAllergyFn, deleteCompanionAllergyFn, showCompanionAllergyFn }
+//UserCompanion { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionIllnessFn, deleteCompanionIllnessFn, showCompanionIllnessFn }
 app.post("/addAcompanante", (req, res) => addUserCompanionFn(req, res, client));
 app.put("/updateAcompanante", (req, res) => updateUserCompanionFn(req, res, client));
 app.post("/deleteAcompanante", (req, res) => deleteUserCompanionFn(req, res, client));
 app.post("/showAcompananteInfo", (req, res) => showUserCompanionFn(req, res, client));
-app.post("/addAcompananteAllergy", (req, res) => addCompanionAllergyFn(req, res, client));
-app.post("/deleteAcompananteAllergy", (req, res) => deleteCompanionAllergyFn(req, res, client));
-app.post("/showAcompananteAllergy", (req, res) => showCompanionAllergyFn(req, res, client));
+app.post("/addAcompananteIllness", (req, res) => addCompanionIllnessFn(req, res, client));
+app.post("/deleteAcompananteIllness", (req, res) => deleteCompanionIllnessFn(req, res, client));
+app.post("/showAcompananteIllness", (req, res) => showCompanionIllnessFn(req, res, client));
 
-//UserData { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserAllergyFn, deleteUserAllergyFn, showUserAllergyFn }
+//UserData { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserIllnessFn, deleteUserIllnessFn, showUserIllnessFn }
 app.post("/addAddressUser", (req, res) => addUserAddressFn(req, res, client));
 app.put("/updateUserAddress", (req, res) => updateUserAddressFn(req, res, client));
 app.post("/deleteUserAddress", (req, res) => deleteUserAddressFn(req, res, client));
 app.post("/showUserAddress", (req, res) => showUserAddressFn(req, res, client));
-app.post("/addAllergyUser", (req, res) => addUserAllergyFn(req, res, client));
-app.post("/deleteUserAllergy", (req, res) => deleteUserAllergyFn(req, res, client));
-app.post("/showUserAllergy", (req, res) => showUserAllergyFn(req, res, client));
+app.post("/addIllnessUser", (req, res) => addUserIllnessFn(req, res, client));
+app.post("/deleteUserIllness", (req, res) => deleteUserIllnessFn(req, res, client));
+app.post("/showUserIllness", (req, res) => showUserIllnessFn(req, res, client));
 
 //User { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn }
 app.post("/createAccount", (req, res) => addUserFn(req, res, client));

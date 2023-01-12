@@ -331,7 +331,7 @@ module.exports = { addEntryFn,
     showEntryFilesFn,
     showEntryPicturesFn,
     addPictureForumFn,
-    addFileForumFn,
+    addFileForumFn
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
