@@ -4,6 +4,13 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+const fs = require('fs');
+const crypto = require("crypto");
+const pathObj = require('path');
+const { getFileExtension } = require("../generalFn/generalFn");
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
 //Individual user can create public event
 
 const addUserEventFn = (req, res, client) => {
@@ -13,21 +20,38 @@ const addUserEventFn = (req, res, client) => {
     const descripcion = req.body.descripcion;
     const fecha = req.body.descripcion;
     const hora = req.body.descripcion;
-    const ruta = req.body.descripcion;
-    const poster = req.body.descripcion;
+    const files = req.files;
 
     const inicioLat = req.body.salidaLat;
     const inicioLong = req.body.salidaLong;
     const finLat = req.body.destinoLat;
     const finLong = req.body.destinoLong;
+
+    const randStr = crypto.randomBytes(5).toString('hex');
+    let fileExt, poster, ruta;
+
+    Object.entries(files).forEach(([key, value]) => {
+      fileExt = getFileExtension(value.name);
+
+        if(key == 'poster')
+        {
+            poster = `${__dirname}/../files/users/${id}/images/poster-${randStr}${fileExt}`;
+            value.mv(`${__dirname}/../files/users/${id}/images/poster-${randStr}${fileExt}`, (err) => console.log(err))
+        }
+        if(key == 'ruta')
+        {
+            ruta = `${__dirname}/../files/users/${id}/files/ruta-${randStr}${fileExt}`;
+            value.mv(`${__dirname}/../files/users/${id}/files/ruta-${randStr}${fileExt}`, (err) => console.log(err))
+        }
+    })
   
       let query = `
-      with first_insert as (
-        INSERT INTO evento_individual( titulo, descripcion, fecha, hora, ruta, idusuario, poster)
-        values ($1, $2, $3, $4, $5, $6, $7) RETURNING idevento_individual)
-		INSERT INTO puntos_evento_individual, ideventoindividual_fk, salidaLat, salidaLong, destinoLat, detinoLong)
-        VALUES((select idevento_individual from first_insert), $8, $9, $10, $11)
-        ;`
+        with first_insert as (
+          INSERT INTO evento_individual( titulo, descripcion, fecha, hora, ruta, idusuario, poster)
+          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING idevento_individual)
+        INSERT INTO puntos_evento_individual, ideventoindividual_fk, salidaLat, salidaLong, destinoLat, detinoLong)
+          VALUES((SELECT idevento_individual FROM first_insert), $8, $9, $10, $11)
+          ;`
 
       client.query(
         query,
@@ -50,20 +74,38 @@ const addUserEventFn = (req, res, client) => {
 
   //Update info of individual Event and location
 
-  const updateUserEventFn = (req, res, client) => {
+  const updateUserEventFn = (req, res, client) => { //SE DEBEN SUBIR AMBOS ARCHIVOS PD. NO SE BORRAN LAS FOTOS
 
     const idevento_individual = req.body.idevento_individual;
     const titulo = req.body.titulo;
     const descripcion = req.body.descripcion;
     const fecha = req.body.descripcion;
     const hora = req.body.descripcion;
-    const ruta = req.body.descripcion;
-    const poster = req.body.descripcion;
+    const files = req.files;
 
     const inicioLat = req.body.salidaLat;
     const inicioLong = req.body.salidaLong;
     const finLat = req.body.destinoLat;
     const finLong = req.body.destinoLong;
+
+    let poster = '';
+    let ruta = '';
+
+    Object.entries(files).forEach(([key, value]) => {
+        fileExt = getFileExtension(value.name);
+  
+          if(key == 'poster')
+          {
+              poster = `${__dirname}/../files/users/${id}/images/poster-${randStr}${fileExt}`;
+              value.mv(`${__dirname}/../files/users/${id}/images/poster-${randStr}${fileExt}`, (err) => console.log(err))
+          }
+          if(key == 'ruta')
+          {
+  
+            ruta = `${__dirname}/../files/users/${id}/images/ruta-${randStr}${fileExt}`;
+            value.mv(`${__dirname}/../files/users/${id}/images/ruta-${randStr}${fileExt}`, (err) => console.log(err))
+          }
+    })
   
       let query = `
         UPDATE evento_individual
@@ -107,6 +149,18 @@ const addUserEventFn = (req, res, client) => {
 const deleteUserEventFn = (req, res, client) => {
 
   const idevento_individual = req.body.idevento_individual;
+
+  client.query('SELECT poster, ruta FROM evento_individual WHERE idevento_individual = $1;',
+        [idevento_individual],
+        (err, result) => {
+            try {
+              fs.unlinkSync(result.rows[0].poster);
+              fs.unlinkSync(result.rows[0].ruta);
+              console.log("Old pictures deleted");
+            } catch (error) {
+              console.log(error);
+            }
+          });
 
     let query = `
         DELETE from evento_individual

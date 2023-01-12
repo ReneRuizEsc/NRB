@@ -78,7 +78,7 @@ const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, s
 //Login
 const { loginFn, restorePassword } = require("./fn_queries/loginFile");
 //Members
-const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn } = require("./fn_queries/membersFile");
+const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion } = require("./fn_queries/membersFile");
 //Other
 const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro } = require("./fn_queries/otherFunctionsFile");
 //Companion
@@ -92,9 +92,9 @@ const { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, sho
 //UserEvent
 const { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn } = require("./fn_queries/userEventFile");
 //Upload
-const { uploadProfilePic } = require("./fn_upload/uploadFn");
+const { uploadProfilePic } = require("./fn_upload/uploadFn");//Salvame del olvido
 //Download
-const { getProfilePic, getClubLogo, downloadTest, getClubLogoNombre, getClubLogoUbic } = require("./fn_download/download");
+const { getProfilePic, getClubLogo, downloadTest, getClubLogoNombre, getClubLogoUbic, printGeneralFileFn } = require("./fn_download/download");
 //Comunicado
 const { addComunicadoFn, updateComunicadoFn, deleteComunicadoFn, showComunicadoFn, showComunicadoListFn, addComunicadoPicturesFn, deleteComunicadoPicturesFn, addComunicadoFilesFn, deleteComunicadoFilesFn } = require("./fn_queries/comunicadoFile");
 //Forum

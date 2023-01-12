@@ -96,8 +96,8 @@ const newMemberClubAcceptFn = (req, res, client) => {
       let mailOptions = {
         from: 'ttmotosescom@gmail.com',
         to: email,
-        subject: 'Aceptado en club. NiceRider',
-        text: 'Su solicitud de unirse al club ' + nombre + ' ha sido aceptada '
+        subject: 'Aceptado en club.',
+        text: 'Su solicitud de unirse al club ' + nombreclub + ' ha sido aceptada '
       };
 
       transporter.sendMail(mailOptions, function (error, info) {
@@ -120,16 +120,17 @@ const newMemberClubAcceptFn = (req, res, client) => {
 
 const newMemberClubRejectFn = (req, res, client) => {
   const idusuario = req.body.idusuario;
+  const idmembresia = req.body.idmembresia;
+  const idclub = req.body.idclub;
 
   const queryStr = `
-      UPDATE miembro_club
-      SET pendiente = false,
-      WHERE idusuario_fk = $1;
+      DELETE FROM miembro_club
+      WHERE idMembresia = $1;
       ;`
 
   client.query(
     queryStr,
-    [idusuario],
+    [idmembresia],
     (err, result) => {
       if (err)
       {
@@ -137,6 +138,44 @@ const newMemberClubRejectFn = (req, res, client) => {
         res.send({ error: 'No se registró la respuesta a la solicitud' });
         return;
       }
+
+      let nombreclub;
+      let email;
+
+      client.query('SELECT nombre FROM club where idclub = $1', idclub, (err, resp) =>
+      {
+        nombreclub = resp.rows[0].nombre;
+      });
+
+      client.query('SELECT correo FROM cuenta INNER JOIN usuario ON idusuario = idcuenta_fk where idcuenta = $1', idusuario, (err, resp) =>
+      {
+        correo = resp.rows[0].correo;
+      });
+
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'ttmotosescom@gmail.com',
+          pass: 'aixmgdgdafdofbdc'
+        }
+      });
+
+      let mailOptions = {
+        from: 'ttmotosescom@gmail.com',
+        to: email,
+        subject: 'Solicitud de ingreso rechazada.',
+        text: 'Su solicitud de unirse al club ' + nombreclub + ' ha sido rechazada. '
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+
+      res.send({message: "ok"});
 
       console.log(result)
       res.send({ created: true})
@@ -187,6 +226,7 @@ const showMiembrosClubFn = (req, res, client) => {
 const addAmonestacion = (req, res, client) => {
   if(!req.session?.user || req.session.user.cargo !== 3 || req.session.user.cargo !== 1) //1: presidente, 8: secretario
   res.send("Hubo un problema");
+
   const idusuario = req.session.user.idusuario;
   const motivo = req.body.motivo;
   const descripcion = req.body.descripcion;
@@ -216,6 +256,35 @@ const addAmonestacion = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn }
+const deleteAmonestacion = (req, res, client) => {
+  if(!req.session?.user || req.session.user.cargo !== 3 || req.session.user.cargo !== 1) //1: presidente, 8: secretario
+  res.send("Hubo un problema");
+
+  const idamonestacion = req.body.amonestacion;
+
+  const queryStr = `
+    DELETE FROM amonestaciones
+    WHERE idAmonestacion = $1
+    ;`
+
+  client.query(
+    queryStr,
+    [idamonestacion],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        res.send({ error: 'No fue borrada' });
+        return;
+      }
+
+      res.send({ message: "Fue borrada la amonestacion" });
+    }
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+module.exports = { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

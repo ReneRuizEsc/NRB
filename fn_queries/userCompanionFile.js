@@ -91,6 +91,9 @@ const deleteUserCompanionFn = (req, res, client) => {
     const usuario = req.body.idusuario;
     
     const queryStr = `
+        DELETE FROM A_PADECIMIENTOS
+        WHERE idusuario_fk = $1;
+
         DELETE FROM acompanante
         WHERE idusuario_fk = $1
         ;`
