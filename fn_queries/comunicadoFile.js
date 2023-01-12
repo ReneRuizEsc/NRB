@@ -42,8 +42,6 @@ const addComunicadoFn = (req, res, client) => { //AQUI FALTARÍA LA APROBACIÓN 
   }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-  if(!req.session?.user || req.session.user.cargo !== 1 || req.session.user.cargo !== 2)//Presidente o vicepresidente
-    res.send("Hubo un problema");
 
   const updateComunicadoFn = (req, res, client) => {
     if(!req.session?.user || req.session.user.cargo !== 1 || req.session.user.cargo !== 2)

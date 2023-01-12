@@ -10,10 +10,10 @@ const { getFileExtension } = require("../generalFn/generalFn");
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 const addClubFn = (req, res, client) => {
-  if(!req.session?.user || req.session.user.verificacion !== TRUE) //El usuario no está verificado
+  if(!req.session?.user || req.session.user.verificacion !== true) //El usuario no está verificado
   res.send("El usuario no está verificado");
 
-  if(req.session.user.hasmembresia == TRUE) //El usuario ya pertenece a un club
+  if(req.session.user.hasmembresia == true) //El usuario ya pertenece a un club
   res.send("El usuario ya pertenece a un club");
 
   const idusuario = req.session.user.idusuario;

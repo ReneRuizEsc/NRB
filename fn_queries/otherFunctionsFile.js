@@ -156,8 +156,8 @@ const verifyAdminFn = (req, res, client) => {
     
     const queryStr = `
         UPDATE verificacion 
-        set verificacion = TRUE,
-        pendiente = FALSE
+        set verificacion = true,
+        pendiente = false
         where idUsuario_fk = $1;
         ;`
     
@@ -248,8 +248,8 @@ const notVerifyAdminFn = (req, res, client) => {
     
     const queryStr = `
         UPDATE verificacion 
-        set verificacion = FALSE,
-        pendiente = FALSE,
+        set verificacion = false,
+        pendiente = false,
         fotoCredencialF = '',
         fotoCredencialT = '',
         fotoRostro = ''
