@@ -276,14 +276,21 @@ const showPendingVerificationFn = (req, res, client) => {
     if(req.session.user.tipocuenta !== 2)
         return res.send("No es administrador");
     const valor = true;
+    const key = 'QxiE+JMOl7PTGP8rDIwhew==';
+
     const queryStr = `
-    SELECT idusuario_fk from verificacion
-    WHERE pendiente = $1;
-        ;`
+      SELECT idusuario_fk, 
+        nombre, 
+        pgp_sym_decrypt(ap::bytea, $1) as ap,
+        pgp_sym_decrypt(am::bytea, $1) as am  
+      from verificacion
+      INNER JOIN usuario
+      ON idusuario_fk = idusuario AND pendiente = $2;
+    ;`
     
     client.query(
         queryStr,
-        [valor],
+        [key, valor],
         (err, result) => {
         if (err)
         {
@@ -293,7 +300,7 @@ const showPendingVerificationFn = (req, res, client) => {
         }
 
         if (result.rows.length > 0) {
-            res.send(result.rows[0]);
+            res.send(result.rows);
           } else {
             res.send({ message: "No existen pendientes" });
             console.log(result);
