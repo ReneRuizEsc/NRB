@@ -52,7 +52,7 @@ app.use(
   session({
     key: "userId",
     secret: "alicia la loca",
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     cookie: {
       maxAge: oneDay,
