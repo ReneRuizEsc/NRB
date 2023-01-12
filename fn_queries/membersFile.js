@@ -285,6 +285,43 @@ const deleteAmonestacion = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+const deleteFromClub = (req, res, client) => {
+  if(!req.session?.user)
+  res.send("Hubo un problema");
+
+  const idmembresia = req.body.membresia;
+
+  const queryStr = `
+    DELETE FROM cargos
+    WHERE idMiembro_fk = $1;
+
+    UPDATE usuario
+    SET hasmembresia = false
+    WHERE idusuario IN
+    (SELECT idUsuario_fk FROM miembro_club where idMembresia = $1)
+
+    DELETE FROM miembro_club
+    WHERE idMembresia = $1;
+    ;`
+
+  client.query(
+    queryStr,
+    [idmembresia],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        res.send({ error: 'No fue borrada la cuenta del usuario' });
+        return;
+      }
+
+      res.send({ message: "Fue borrada la membresia del usuario" });
+    }
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
 module.exports = { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

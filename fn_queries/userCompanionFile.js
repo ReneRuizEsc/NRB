@@ -334,6 +334,7 @@ const showCompanionIllnessFn = (req, res, client) => {
 module.exports = {
     addUserCompanionFn,
     updateUserCompanionFn,
+    updateProfilePicCompanion,
     deleteUserCompanionFn,
     showUserCompanionFn,
     addCompanionIllnessFn,

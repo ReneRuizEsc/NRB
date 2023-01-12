@@ -82,7 +82,7 @@ const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiemb
 //Other
 const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro } = require("./fn_queries/otherFunctionsFile");
 //Companion
-const { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionIllnessFn, deleteCompanionIllnessFn, showCompanionIllnessFn } = require("./fn_queries/userCompanionFile");
+const { addUserCompanionFn, updateUserCompanionFn, updateProfilePicCompanion, deleteUserCompanionFn, showUserCompanionFn, addCompanionIllnessFn, deleteCompanionIllnessFn, showCompanionIllnessFn } = require("./fn_queries/userCompanionFile");
 //UserData
 const { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserIllnessFn, deleteUserIllnessFn, showUserIllnessFn } = require("./fn_queries/userDataFile");
 //User
@@ -99,6 +99,7 @@ const { getProfilePic, getClubLogo, downloadTest, getClubLogoNombre, getClubLogo
 const { addComunicadoFn, updateComunicadoFn, deleteComunicadoFn, showComunicadoFn, showComunicadoListFn, addComunicadoPicturesFn, deleteComunicadoPicturesFn, addComunicadoFilesFn, deleteComunicadoFilesFn } = require("./fn_queries/comunicadoFile");
 //Forum
 const { addEntryFn, deleteEntryFn, addResponseFn, showEntryMAINListFn, showEntryResponseListFn, showEntryFilesFn, showEntryPicturesFn, addPictureForumFn, addFileForumFn } = require("./fn_queries/forumFile");
+//
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
