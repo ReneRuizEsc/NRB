@@ -189,17 +189,16 @@ const deleteUserEventFn = (req, res, client) => {
 // idUsuario = All user events
 
 const showUserEventListFn = (req, res, client) => {
-    const idusuario = req.body.idusuario;
+    //const idusuario = req.body.idusuario;
   
     const queryStr = `
       SELECT * FROM evento_individual 
-      INNER JOIN puntos_evento_individual on ideventoindividual_fk = idevento_individual 
-      where idusuario_fk = $1
+      INNER JOIN puntos_evento_individual on ideventoindividual_fk = idevento_individual
       ;`
   
     client.query(
       queryStr,
-      [idusuario],
+      [],
       (err, result) => {
         if (err)
         {

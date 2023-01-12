@@ -108,7 +108,7 @@ const addResponseFn = (req, res, client) => {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 const showEntryMAINListFn = (req, res, client) => {
-    const idPublicacion = req.body.idPublicacion;
+    const idusuario = req.body.idusuario;
     
     const queryStr = `
         SELECT titulo, texto, fecha, apodo FROM publicacion_foro
@@ -118,7 +118,7 @@ const showEntryMAINListFn = (req, res, client) => {
 
         client.query(
             queryStr,
-            [idPublicacion],
+            [idusuario],
             (err, result) => {
               if (err)
               {
