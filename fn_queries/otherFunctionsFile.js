@@ -273,7 +273,7 @@ const notVerifyAdminFn = (req, res, client) => {
 //Use this to show a list of all pending requests
 
 const showPendingVerificationFn = (req, res, client) => {
-    if(req.session.tipocuenta !== 2)
+    if(req.session.user.tipocuenta !== 2)
         return res.send("No es administrador");
     const valor = true;
     const queryStr = `
