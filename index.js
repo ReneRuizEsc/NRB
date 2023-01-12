@@ -99,7 +99,13 @@ const { getProfilePic, getClubLogo, downloadTest, getClubLogoNombre, getClubLogo
 const { addComunicadoFn, updateComunicadoFn, deleteComunicadoFn, showComunicadoFn, showComunicadoListFn, addComunicadoPicturesFn, deleteComunicadoPicturesFn, addComunicadoFilesFn, deleteComunicadoFilesFn } = require("./fn_queries/comunicadoFile");
 //Forum
 const { addEntryFn, deleteEntryFn, addResponseFn, showEntryMAINListFn, showEntryResponseListFn, showEntryFilesFn, showEntryPicturesFn, addPictureForumFn, addFileForumFn } = require("./fn_queries/forumFile");
-//
+//DemosKratos
+//const {  } = require("./fn_queries/demosKratos.js");
+//GeneralReports
+//ClubEvents
+//Agreements
+//Sponsor
+//SponsorSpace
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
