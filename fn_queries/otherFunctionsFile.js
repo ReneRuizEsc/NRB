@@ -88,11 +88,11 @@ const verifyUserFn = (req, res, client) => {
             }
             else
             {
-              res.send({message: "Se ha subido la imagen con éxito."});
               req.session.user = {
                 ...req.session.user,
                 pendiente: true
               }
+              res.send({message: "Se ha subido la imagen con éxito."});
             }
         });
   }
