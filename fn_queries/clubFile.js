@@ -246,6 +246,8 @@ const deleteClubFn = (req, res, client) => {
     
     with asd as (select idvotacion from votaciones where club = $1)
     DELETE from archivos_votaciones WHERE idVotacion_fk = (select idvotacion from asd);
+
+    DELETE FROM votaciones WHERE club = $1;
     
     with asd as (select idcomunicado from comunicado where club = $1)
     DELETE from archivos_comunicado WHERE idComunicado_fk = (select idcomunicado from asd);
@@ -273,6 +275,8 @@ const deleteClubFn = (req, res, client) => {
     
     with asd as (select idMembresia from miembro_club where idclub_fk = $1)
     DELETE from cargos WHERE idmiembro_fk = (select idMembresia from asd);
+
+    UPDATE usuario SET hasmembresia = false WHERE idusuario IN (SELECT idusuario_fk FROM miembro_club WHERE idclub_fk=$1);
     
     DELETE from miembro_club WHERE idClub_fk = $1;
     
