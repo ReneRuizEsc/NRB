@@ -69,12 +69,17 @@ const getClubLogoNombre = (req, res, client) => {
           if(err)
             return;
           else{
-            if(result.rows.length < 1 || result.rows[0].logo_nombre_club.length < 2){
+            console.log(result)
+            if(result.rows.length < 1 || result.rows[0].logo_nombre_club?.length < 2){
                 return;
             }else{
-                const path = result.rows[0].logo_nombre_club;
-                console.log("Logo path: ", path)
-                res.sendFile(pathObj.resolve(path));
+                try {
+                  const path = result.rows[0].logo_nombre_club;
+                  console.log("Logo path: ", path)
+                  res.sendFile(pathObj.resolve(path));
+                } catch (error) {
+                  console.log(error)
+                }
                 return;
             }
 
