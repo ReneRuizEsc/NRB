@@ -121,16 +121,19 @@ app.get("/getClubLogoNombre", (req, res) => getClubLogoNombre(req, res, client))
 app.get("/getClubLogoUbic", (req, res) => getClubLogoUbic(req, res, client));
 
 
-//Others { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
+//Others
 app.post("/verifyStatus", (req, res) => verifyStatusFn(req, res, client));
 app.post("/verifyUser", (req, res) => verifyUserFn(req, res, client));
 app.put("/pendingVerification", (req, res) => showPendingVerificationFn(req, res, client));
 app.put("/allUsers", (req, res) => allUsers(req, res, client));
+app.get("/getCredencialF", (req, res) => getCredencialF(req, res, client));
+app.get("/getCredencialT", (req, res) => getCredencialT(req, res, client));
+app.get("/getFotoRostro", (req, res) => getFotoRostro(req, res, client));
 
-app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));//Aceptar verificacion
+app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));//Aceptar verificacion-----------------------------------
 app.put("/notverifyAdmin", (req, res) => notVerifyAdminFn(req, res, client));
 
-//Club { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn }
+//Club
 app.post("/createClub", (req, res) => addClubFn(req, res, client));
 app.put("/updateClub", (req, res) => updateClubFn(req, res, client));
 app.post("/delteClub", (req, res) => deleteClubFn(req, res, client));
@@ -141,18 +144,18 @@ app.put("/updateClubAddress", (req, res) => updateClubAddressFn(req, res, client
 
 app.put("/showPointListClub", (req, res) => showPointListFn(req, res, client));
 
-//Members { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn }
+//Members
 app.post("/newMemberClub", (req, res) => newMemberClubFn(req, res, client));
 app.post("/infoClubMembers", (req, res) => showMiembrosClubFn(req, res, client));
 
 app.post("/deleteFromClub", (req, res) => deleteFromClub(req, res, client));//Borrar miembro o salir de club
 
-app.post("/newMemberClubAccept", (req, res) => newMemberClubAcceptFn(req, res, client));//Aceptar miembro de club
+app.post("/newMemberClubAccept", (req, res) => newMemberClubAcceptFn(req, res, client));//Aceptar miembro de club-------------------------------------
 app.post("/newMemberClubReject", (req, res) => newMemberClubRejectFn(req, res, client));
 
 app.get("/showSolicitudState", (req, res) => showSolicitudState(req, res, client));
 
-//UserCompanion { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionIllnessFn, deleteCompanionIllnessFn, showCompanionIllnessFn }
+//UserCompanion
 app.post("/addAcompanante", (req, res) => addUserCompanionFn(req, res, client));
 app.put("/updateAcompanante", (req, res) => updateUserCompanionFn(req, res, client));
 app.post("/deleteAcompanante", (req, res) => deleteUserCompanionFn(req, res, client));
@@ -161,7 +164,7 @@ app.post("/addAcompananteIllness", (req, res) => addCompanionIllnessFn(req, res,
 app.post("/deleteAcompananteIllness", (req, res) => deleteCompanionIllnessFn(req, res, client));
 app.post("/showAcompananteIllness", (req, res) => showCompanionIllnessFn(req, res, client));
 
-//UserData { addUserAddressFn, updateUserAddressFn, deleteUserAddressFn, showUserAddressFn, addUserIllnessFn, deleteUserIllnessFn, showUserIllnessFn }
+//UserData
 app.post("/addAddressUser", (req, res) => addUserAddressFn(req, res, client));
 app.put("/updateUserAddress", (req, res) => updateUserAddressFn(req, res, client));
 app.post("/deleteUserAddress", (req, res) => deleteUserAddressFn(req, res, client));
@@ -170,20 +173,20 @@ app.post("/addIllnessUser", (req, res) => addUserIllnessFn(req, res, client));
 app.post("/deleteUserIllness", (req, res) => deleteUserIllnessFn(req, res, client));
 app.post("/showUserIllness", (req, res) => showUserIllnessFn(req, res, client));
 
-//User { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn }
+//User
 app.post("/createAccount", (req, res) => addUserFn(req, res, client));
 app.put("/update", (req, res) => updateUserFn(req, res, client));
 app.post("/deleteUser", (req, res) => deleteUserFn(req, res, client));
 app.post("/showUser", (req, res) => showUserFn(req, res, client));
 app.put("/updateContrasena", (req, res) => updateContrasenaFn(req, res, client));
 
-//Motorcycle { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn }
+//Motorcycle
 app.post("/addMotorcycle", (req, res) => addUserMotorcycleFn(req, res, client));
 app.put("/updateMotorcycle", (req, res) => updateUserMotorcycleFn(req, res, client));
 app.post("/deletemotorcycle", (req, res) => deleteUserMotorcycleFn(req, res, client));
 app.post("/showMotorcycleInfo", (req, res) => showUserMotorcycleFn(req, res, client));
 
-//IndividualEvent { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn }
+//IndividualEvent
 app.post("/addUserEvent", (req, res) => addUserEventFn(req, res, client));
 app.put("/updateUserEvent", (req, res) => updateUserEventFn(req, res, client));
 app.post("/deleteUserEvent", (req, res) => deleteUserEventFn(req, res, client));
