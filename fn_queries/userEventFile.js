@@ -279,7 +279,7 @@ const showUserEventPointsFn = (req, res, client) => {
   
         if (result.rows.length > 0)
         {
-          res.send(result.rows[0]);
+          res.send(result.rows);
         }
         else
         {
@@ -290,8 +290,37 @@ const showUserEventPointsFn = (req, res, client) => {
     );
 }
 
+const showEventPointsListFn = (req, res, client) => {
+
+  const queryStr = `
+    SELECT salidalat, salidalong FROM puntos_evento
+    ;`
+
+  client.query(
+    queryStr,
+    [],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        res.send({ error: err });
+      }
+
+      if (result.rows.length > 0)
+      {
+        res.send(result.rows);
+      }
+      else
+      {
+        res.send({ message: "No existen registros" });
+        console.log(result);
+      }
+    }
+  );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn }
+module.exports = { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn, showEventPointsListFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

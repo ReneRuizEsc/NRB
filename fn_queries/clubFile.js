@@ -424,6 +424,35 @@ const showClubListFn = (req, res, client) => {
   );
 }
 
+const showPointListFn = (req, res, client) => {
+
+  const queryStr = `
+    SELECT direccionlat, direccionlong FROM direccion_club
+    ;`
+
+  client.query(
+    queryStr,
+    [],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        res.send({ error: err });
+      }
+
+      if (result.rows.length > 0)
+      {
+        res.send(result.rows);
+      }
+      else
+      {
+        res.send({ message: "Lista de puntos de clubes vacia" });
+        console.log(result);
+      }
+    }
+  );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 // idUser = all info of direccion_club, colores_club, club.
@@ -551,6 +580,6 @@ const missingRanksFn = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, showClubListFn, updateClubAddressFn, updateClubRanksFn, missingRanksFn }
+module.exports = { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, showClubListFn, updateClubAddressFn, updateClubRanksFn, missingRanksFn, showPointListFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

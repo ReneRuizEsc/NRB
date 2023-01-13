@@ -74,7 +74,7 @@ app.use(fileUpload({
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //Club
-const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, showClubListFn, updateClubAddressFn, updateClubRanksFn, missingRanksFn } = require("./fn_queries/clubFile");
+const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, showClubListFn, updateClubAddressFn, updateClubRanksFn, missingRanksFn , showPointListFn} = require("./fn_queries/clubFile");
 //Login
 const { loginFn, restorePassword } = require("./fn_queries/loginFile");
 //Members
@@ -90,7 +90,7 @@ const { addUserFn, updateUserFn, deleteUserFn, showUserFn, updateContrasenaFn } 
 //Moto
 const { addUserMotorcycleFn, updateUserMotorcycleFn, deleteUserMotorcycleFn, showUserMotorcycleFn } = require("./fn_queries/userMotorcycleFile");
 //UserEvent
-const { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn } = require("./fn_queries/userEventFile");
+const { addUserEventFn, updateUserEventFn, deleteUserEventFn, showUserEventListFn, showUserEventEventFn, showUserEventPointsFn, showEventPointsListFn } = require("./fn_queries/userEventFile");
 //Upload
 const { uploadProfilePic } = require("./fn_upload/uploadFn");//Salvame del olvido
 //Download
@@ -124,10 +124,11 @@ app.get("/getClubLogoUbic", (req, res) => getClubLogoUbic(req, res, client))
 //Others { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
 app.post("/verifyStatus", (req, res) => verifyStatusFn(req, res, client));
 app.post("/verifyUser", (req, res) => verifyUserFn(req, res, client));
-app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
-app.put("/notverifyAdmin", (req, res) => notVerifyAdminFn(req, res, client));
 app.put("/pendingVerification", (req, res) => showPendingVerificationFn(req, res, client));
 app.put("/allUsers", (req, res) => allUsers(req, res, client));
+
+app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
+app.put("/notverifyAdmin", (req, res) => notVerifyAdminFn(req, res, client));
 
 //Club { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn }
 app.post("/createClub", (req, res) => addClubFn(req, res, client));
@@ -138,11 +139,14 @@ app.post("/showUserClub", (req, res) => showUserClubFn(req, res, client));
 app.post("/showClublist", (req, res) => showClubListFn(req, res, client));
 app.put("/updateClubAddress", (req, res) => updateClubAddressFn(req, res, client));
 
+app.put("/showPointListClub", (req, res) => showPointListFn(req, res, client));
+
 //Members { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn }
 app.post("/newMemberClub", (req, res) => newMemberClubFn(req, res, client));
+app.post("/infoClubMembers", (req, res) => showMiembrosClubFn(req, res, client));
+
 app.post("/newMemberClubAccept", (req, res) => newMemberClubAcceptFn(req, res, client));
 app.post("/newMemberClubReject", (req, res) => newMemberClubRejectFn(req, res, client));
-app.post("/infoClubMembers", (req, res) => showMiembrosClubFn(req, res, client));
 
 //UserCompanion { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionIllnessFn, deleteCompanionIllnessFn, showCompanionIllnessFn }
 app.post("/addAcompanante", (req, res) => addUserCompanionFn(req, res, client));
@@ -182,6 +186,8 @@ app.post("/deleteUserEvent", (req, res) => deleteUserEventFn(req, res, client));
 app.post("/showUserEventList", (req, res) => showUserEventListFn(req, res, client));
 app.post("/showUserEventEvent", (req, res) => showUserEventEventFn(req, res, client));
 app.post("/showUserEventPoints", (req, res) => showUserEventPointsFn(req, res, client));
+
+app.put("/showEventPointsList", (req, res) => showEventPointsListFn(req, res, client));
 
 //UPLOAD
 app.post("/uploadProfilePic", (req, res) => uploadProfilePic(req, res, client));
