@@ -71,7 +71,7 @@ const getClubLogoNombre = (req, res, client) => {
           else{
             console.log(result)
             if(result.rows.length < 1 || result.rows[0].logo_nombre_club?.length < 2){
-                return;
+                return res.send("");
             }else{
                 try {
                   const path = result.rows[0].logo_nombre_club;
@@ -80,7 +80,7 @@ const getClubLogoNombre = (req, res, client) => {
                 } catch (error) {
                   console.log(error)
                 }
-                return;
+                return res.send("");
             }
 
           }

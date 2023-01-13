@@ -394,7 +394,7 @@ const showUserClubFn = async (req, res, client) => {
 const showClubListFn = (req, res, client) => {
 
   const queryStr = `
-    select club.idclub, club.nombre as nombreClub, usuario.apodo from cargos
+    select club.idclub, club.nombre as nombreClub, club.presentacion, usuario.apodo from cargos
     INNER JOIN miembro_club on idmembresia = cargos.idmiembro_fk
     INNER JOIN usuario on miembro_club.idusuario_fk = usuario.idusuario
     INNER JOIN club on miembro_club.idclub_fk = idclub
