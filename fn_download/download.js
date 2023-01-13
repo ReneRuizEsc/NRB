@@ -20,7 +20,7 @@ const getProfilePic = (req, res, client) => {
                 return res.sendFile(pathObj.resolve(defaultPicturePath)); 
             else{
                 const path = result.rows[0].fotoperfil;
-                console.log("Image path: ", path)
+                //console.log("Image path: ", path)
                 return res.sendFile(pathObj.resolve(path), (err) => err && res.sendFile(pathObj.resolve(defaultPicturePath)));
             }
           }
@@ -46,7 +46,7 @@ const getClubLogo = (req, res, client) => {
                 return;
             }else{
                 const path = result.rows[0].logo;
-                console.log("Logo path: ", path)
+                //console.log("Logo path: ", path)
                 res.sendFile(pathObj.resolve(path));
                 return;
             }
@@ -75,7 +75,7 @@ const getClubLogoNombre = (req, res, client) => {
             }else{
                 try {
                   const path = result.rows[0].logo_nombre_club;
-                  console.log("Logo path: ", path)
+                  //console.log("Logo path: ", path)
                   res.sendFile(pathObj.resolve(path));
                 } catch (error) {
                   console.log(error)
@@ -106,7 +106,7 @@ const getClubLogoUbic = (req, res, client) => {
                 return;
             }else{
                 const path = result.rows[0].logo_ubicacion;
-                console.log("Logo path: ", path)
+                //console.log("Logo path: ", path)
                 res.sendFile(pathObj.resolve(path));
                 return;
             }

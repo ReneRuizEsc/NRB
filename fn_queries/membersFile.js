@@ -43,11 +43,11 @@ const showSolicitudState = (req, res, client) => {
 //Solicitar unirse a club
 
 const newMemberClubFn = (req, res, client) => {
-    const idusuario = req.body.idusuario;
+    const idusuario = req.session.user.idusuario;
     const club = req.body.idclub;
-  
+  console.log(idusuario, club)
     const queryStr = `
-        INSERT into miembro_club (kmreccorridos, fecharenovacion, fechaingreso, idclub_fk, idusuario_fk, pendiente)
+        INSERT into miembro_club (kmrecorridos, fecharenovacion, fechaingreso, idclub_fk, idusuario_fk, pendiente)
         VALUES (0, '12/31/1999', '12/31/1999', $1, $2, true)
         ;`
   
