@@ -8,6 +8,38 @@ var nodemailer = require('nodemailer');
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+const showSolicitudState = (req, res, client) => {
+  const idusuario = req.session.user.idusuario;
+
+  const queryStr = `
+      SELECT pendiente FROM miembro_club
+      WHERE idusuario_fk = $1
+      ;`
+
+  client.query(
+    queryStr,
+    [idusuario],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        res.send({ error: 'No se realizó la consulta' });
+        return;
+      }
+      if(result.rows.length > 0)
+      {
+        console.log("Datos enviados")
+        res.send(result.rows[0])
+      }
+      else
+      {
+        console.log("No hay registro")
+        res.send({message: 'No hay datos de solicitudes del usuario'})
+      }
+    }
+  );
+}
+
 //Solicitar unirse a club
 
 const newMemberClubFn = (req, res, client) => {
@@ -29,6 +61,7 @@ const newMemberClubFn = (req, res, client) => {
           res.send({ error: 'No se realizó el registro del miembro del club' });
           return;
         }
+        req.session.user = {...req.session.user, cargo: 7 };
   
         console.log(result)
         res.send({ created: true})
@@ -322,6 +355,6 @@ const deleteFromClub = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion }
+module.exports = { showSolicitudState, newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion, deleteFromClub }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

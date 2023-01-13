@@ -78,7 +78,7 @@ const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, s
 //Login
 const { loginFn, restorePassword } = require("./fn_queries/loginFile");
 //Members
-const { newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion } = require("./fn_queries/membersFile");
+const { showSolicitudState, newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion, deleteFromClub } = require("./fn_queries/membersFile");
 //Other
 const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro, allUsers } = require("./fn_queries/otherFunctionsFile");
 //Companion
@@ -114,11 +114,11 @@ app.post("/login", (req, res) => loginFn(req, res, client)); //email, password
 app.post("/restorePassword", (req, res) => restorePassword(req, res, client)); //email
 
 // Downloads and Pictures
-app.get("/getProfilePic", (req, res) => getProfilePic(req, res, client))
-app.get("/downloadTest", (req, res) => downloadTest(req, res, client))
-app.get("/getClubLogo", (req, res) => getClubLogo(req, res, client))
-app.get("/getClubLogoNombre", (req, res) => getClubLogoNombre(req, res, client))
-app.get("/getClubLogoUbic", (req, res) => getClubLogoUbic(req, res, client))
+app.get("/getProfilePic", (req, res) => getProfilePic(req, res, client));
+app.get("/downloadTest", (req, res) => downloadTest(req, res, client));
+app.get("/getClubLogo", (req, res) => getClubLogo(req, res, client));
+app.get("/getClubLogoNombre", (req, res) => getClubLogoNombre(req, res, client));
+app.get("/getClubLogoUbic", (req, res) => getClubLogoUbic(req, res, client));
 
 
 //Others { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn }
@@ -127,7 +127,7 @@ app.post("/verifyUser", (req, res) => verifyUserFn(req, res, client));
 app.put("/pendingVerification", (req, res) => showPendingVerificationFn(req, res, client));
 app.put("/allUsers", (req, res) => allUsers(req, res, client));
 
-app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));
+app.put("/verifyAdmin", (req, res) => verifyAdminFn(req, res, client));//Aceptar verificacion
 app.put("/notverifyAdmin", (req, res) => notVerifyAdminFn(req, res, client));
 
 //Club { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, updateClubAddressFn }
@@ -145,8 +145,12 @@ app.put("/showPointListClub", (req, res) => showPointListFn(req, res, client));
 app.post("/newMemberClub", (req, res) => newMemberClubFn(req, res, client));
 app.post("/infoClubMembers", (req, res) => showMiembrosClubFn(req, res, client));
 
-app.post("/newMemberClubAccept", (req, res) => newMemberClubAcceptFn(req, res, client));
+app.post("/deleteFromClub", (req, res) => deleteFromClub(req, res, client));//Borrar miembro o salir de club
+
+app.post("/newMemberClubAccept", (req, res) => newMemberClubAcceptFn(req, res, client));//Aceptar miembro de club
 app.post("/newMemberClubReject", (req, res) => newMemberClubRejectFn(req, res, client));
+
+app.get("/showSolicitudState", (req, res) => showSolicitudState(req, res, client));
 
 //UserCompanion { addUserCompanionFn, updateUserCompanionFn, deleteUserCompanionFn, showUserCompanionFn, addCompanionIllnessFn, deleteCompanionIllnessFn, showCompanionIllnessFn }
 app.post("/addAcompanante", (req, res) => addUserCompanionFn(req, res, client));
