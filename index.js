@@ -78,7 +78,7 @@ const { addClubFn, updateClubFn, deleteClubFn, showClubClubFn, showUserClubFn, s
 //Login
 const { loginFn, restorePassword } = require("./fn_queries/loginFile");
 //Members
-const { showSolicitudState, newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion, deleteFromClub } = require("./fn_queries/membersFile");
+const { showSolicitudState, newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion, deleteFromClub, newMemberCancelFn } = require("./fn_queries/membersFile");
 //Other
 const { verifyStatusFn, verifyUserFn, verifyAdminFn, notVerifyAdminFn, showPendingVerificationFn, getCredencialF, getCredencialT, getFotoRostro, allUsers } = require("./fn_queries/otherFunctionsFile");
 //Companion
@@ -156,6 +156,7 @@ app.get("/showSolicitudState", (req, res) => showSolicitudState(req, res, client
 
 app.post("/newMemberClubAccept", (req, res) => newMemberClubAcceptFn(req, res, client));//Aceptar miembro de club-------------------------------------
 app.post("/newMemberClubReject", (req, res) => newMemberClubRejectFn(req, res, client));
+app.post("/newMemberCancel", (req, res) => newMemberCancelFn(req, res, client));
 
 //UserCompanion
 app.post("/addAcompanante", (req, res) => addUserCompanionFn(req, res, client));

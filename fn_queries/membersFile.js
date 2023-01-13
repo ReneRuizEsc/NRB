@@ -12,7 +12,7 @@ const showSolicitudState = (req, res, client) => {
   const idusuario = req.session.user.idusuario;
 
   const queryStr = `
-      SELECT pendiente FROM miembro_club
+      SELECT idclub_fk FROM miembro_club
       WHERE idusuario_fk = $1
       ;`
 
@@ -216,6 +216,31 @@ const newMemberClubRejectFn = (req, res, client) => {
   );
 }
 
+const newMemberCancelFn = (req, res, client) => {
+  const idusuario = req.session.user.idusuario;
+
+  const queryStr = `
+      DELETE FROM miembro_club
+      WHERE idusuario_fk = $1;
+      ;`
+
+  client.query(
+    queryStr,
+    [idusuario],
+    (err, result) => {
+      if (err)
+      {
+        console.log(err);
+        res.send({ error: 'No se registró la respuesta a la solicitud' });
+        return;
+      }
+
+      console.log("Se canceló")
+      res.send({ created: true})
+    }
+  );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 // 1: presidente, 2: vicepresidente, 3: sgto de armas, 4: tesorero, 5: capitán de ruta, 6: prospect, 7: miembro, 8: secretario)
@@ -355,6 +380,6 @@ const deleteFromClub = (req, res, client) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { showSolicitudState, newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion, deleteFromClub }
+module.exports = { showSolicitudState, newMemberClubFn, newMemberClubAcceptFn, newMemberClubRejectFn, showMiembrosClubFn, addAmonestacion, deleteAmonestacion, deleteFromClub, newMemberCancelFn }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
