@@ -293,9 +293,8 @@ const showUserEventPointsFn = (req, res, client) => {
 const showEventPointsListFn = (req, res, client) => {
 
   const queryStr = `
-    SELECT titulo, descripcion, fecha, hora, salidalat, salidalong, poster
-    FROM puntos_evento
-    INNER JOIN evento_individual ON idEvento_individual = idEventoIndividual_fk
+      SELECT  salidalat, salidalong, titulo, descripcion, fecha, hora, poster FROM puntos_evento_individual
+      INNER JOIN evento_individual ON idEvento_individual = idEventoIndividual_fk
     ;`
 
   client.query(
