@@ -61,7 +61,7 @@ const newMemberClubFn = (req, res, client) => {
           res.send({ error: 'No se realizó el registro del miembro del club' });
           return;
         }
-        req.session.user = {...req.session.user, cargo: 7 };
+        req.session.user = {...req.session.user, clubpendiente: true };
   
         console.log(result)
         res.send({ created: true})

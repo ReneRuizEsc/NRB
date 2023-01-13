@@ -8,7 +8,7 @@ const fs = require('fs');
 const crypto = require("crypto");
 const pathObj = require('path');
 const { getFileExtension } = require("../generalFn/generalFn");
-
+var nodemailer = require('nodemailer');
 //Use this to know status of account before everything
 
 const verifyStatusFn = (req, res, client) => {
@@ -107,8 +107,8 @@ const verifyAdminFn = (req, res, client) => {
     let userEmailResponse;
 
     const query =`
-        WITH asd as (SELECT idCuenta_fk FROM usuario WHERE idcuenta = $1)
-        SELECT correo FROM cuenta where idCuenta = (SELECT idCuenta FROM asd)
+        WITH asd as (SELECT idCuenta_fk FROM usuario WHERE idusuario = $1)
+        SELECT correo FROM cuenta where idCuenta = (SELECT idCuenta_fk FROM asd)
         ;`;
 
     client.query(query, [usuario], (err, result) => {
@@ -131,7 +131,7 @@ const verifyAdminFn = (req, res, client) => {
               let mailOptions = {
                 from: 'ttmotosescom@gmail.com',
                 to: userEmailResponse.correo,
-                subject: 'Recuperación de contraseña. NiceRider',
+                subject: 'Verificación de la cuenta - NiceRider',
                 text: 'La solicitud de verificacion de la cuenta con correo: ' + userEmailResponse.correo + ' fue aprobada. \n ATTE: NiceRider'
               };
       
@@ -199,8 +199,8 @@ const notVerifyAdminFn = (req, res, client) => {
     let userEmailResponse;
 
     const query =`
-        WITH asd as (SELECT idCuenta_fk FROM usuario WHERE idcuenta = $1)
-        SELECT correo FROM cuenta where idCuenta = (SELECT idCuenta FROM asd)
+        WITH asd as (SELECT idCuenta_fk FROM usuario WHERE idusuario = $1)
+        SELECT correo FROM cuenta where idCuenta = (SELECT idCuenta_fk FROM asd)
         ;`;
 
     client.query(query, [usuario], (err, result) => {
@@ -223,8 +223,8 @@ const notVerifyAdminFn = (req, res, client) => {
               let mailOptions = {
                 from: 'ttmotosescom@gmail.com',
                 to: userEmailResponse.correo,
-                subject: 'Recuperación de contraseña. NiceRider',
-                text: 'La solicitud de verificacion de la cuenta con correo: ' + userEmailResponse.correo + ' fue rechazada. \n ATTE: NiceRider'
+                subject: 'Verificación de la cuenta - NiceRider',
+                text: 'Lamentablemente la solicitud de verificacion de la cuenta con correo: ' + userEmailResponse.correo + ' fue rechazada. \n ATTE: NiceRider'
               };
       
               transporter.sendMail(mailOptions, function (error, info) {
