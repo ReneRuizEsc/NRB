@@ -427,7 +427,9 @@ const showClubListFn = (req, res, client) => {
 const showPointListFn = (req, res, client) => {
 
   const queryStr = `
-    SELECT direccionlat, direccionlong FROM direccion_club
+    SELECT direccionlat, direccionlong, nombre, presentacion, idclub
+    FROM direccion_club
+    INNER JOIN club ON idclub = idclub_fk
     ;`
 
   client.query(

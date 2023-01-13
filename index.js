@@ -103,6 +103,9 @@ const { addEntryFn, deleteEntryFn, addResponseFn, showEntryMAINListFn, showEntry
 //const {  } = require("./fn_queries/demosKratos.js");
 //GeneralReports
 //ClubEvents
+
+const { addClubEventFn, addClubEventRouteFn, deleteClubEventFn, showClubEventListFn, showClubEventDetailsFn, showClubEventPointsFn } = require("./fn_queries/clubEventFile");
+
 //Agreements
 //Sponsor
 //SponsorSpace
@@ -149,11 +152,10 @@ app.post("/newMemberClub", (req, res) => newMemberClubFn(req, res, client));
 app.post("/infoClubMembers", (req, res) => showMiembrosClubFn(req, res, client));
 
 app.post("/deleteFromClub", (req, res) => deleteFromClub(req, res, client));//Borrar miembro o salir de club
+app.get("/showSolicitudState", (req, res) => showSolicitudState(req, res, client));
 
 app.post("/newMemberClubAccept", (req, res) => newMemberClubAcceptFn(req, res, client));//Aceptar miembro de club-------------------------------------
 app.post("/newMemberClubReject", (req, res) => newMemberClubRejectFn(req, res, client));
-
-app.get("/showSolicitudState", (req, res) => showSolicitudState(req, res, client));
 
 //UserCompanion
 app.post("/addAcompanante", (req, res) => addUserCompanionFn(req, res, client));
@@ -203,12 +205,23 @@ app.post("/uploadProfilePic", (req, res) => uploadProfilePic(req, res, client));
 app.post("/addEntry", (req, res) => addEntryFn(req, res, client));
 app.post("/deleteEntry", (req, res) => deleteEntryFn(req, res, client));
 app.post("/addResponse", (req, res) => addResponseFn(req, res, client));
-app.post("/showMainList", (req, res) => showEntryMAINListFn(req, res, client));
-app.post("/showEntryResponseList", (req, res) => showEntryResponseListFn(req, res, client));
 app.post("/showEntryFiles", (req, res) => showEntryFilesFn(req, res, client));
 app.post("/showEntryPictures", (req, res) => showEntryPicturesFn(req, res, client));
 app.post("/addPictureForum", (req, res) => addPictureForumFn(req, res, client));
 app.post("/addFileForum", (req, res) => addFileForumFn(req, res, client));
+
+app.get("/showMainList", (req, res) => showEntryMAINListFn(req, res, client));
+app.post("/showEntryResponseList", (req, res) => showEntryResponseListFn(req, res, client));
+
+//ClubEvent
+app.post("/addClubEvent", (req, res) => addClubEventFn(req, res, client));
+app.post("/addClubEventRoute", (req, res) => addClubEventRouteFn(req, res, client));
+app.post("/deleteClubEvent", (req, res) => deleteClubEventFn(req, res, client));
+app.post("/showClubEventDetails", (req, res) => showClubEventDetailsFn(req, res, client));
+
+app.get("/showClubEventList", (req, res) => showClubEventListFn(req, res, client));
+
+app.post("/showClubEventPoints", (req, res) => showClubEventPointsFn(req, res, client));
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
