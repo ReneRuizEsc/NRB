@@ -323,6 +323,7 @@ const getCredencialF = (req, res, client) => {
       query, 
       [idusuario], 
       (err, result)=>{
+        console.log(err, result)
           if(err)
             return res.sendFile(pathObj.resolve(defaultPicturePath));
           else{
