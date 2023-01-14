@@ -310,7 +310,7 @@ const showPendingVerificationFn = (req, res, client) => {
 }
 
 const getCredencialF = (req, res, client) => {
-    if(req.session.tipocuenta !== 2)
+    if(req.session.user.tipocuenta !== 2)
         return res.send("No es administrador");
 
     const idusuario = req.query.idusuario;
@@ -323,7 +323,6 @@ const getCredencialF = (req, res, client) => {
       query, 
       [idusuario], 
       (err, result)=>{
-        console.log(err, result)
           if(err)
             return res.sendFile(pathObj.resolve(defaultPicturePath));
           else{
@@ -340,7 +339,7 @@ const getCredencialF = (req, res, client) => {
 }
 
 const getCredencialT = (req, res, client) => {
-    if(req.session.tipocuenta !== 2)
+    if(req.session.user.tipocuenta !== 2)
         return res.send("No es administrador");
 
     const idusuario = req.query.idusuario;
@@ -369,7 +368,7 @@ const getCredencialT = (req, res, client) => {
 }
 
 const getFotoRostro = (req, res, client) => {
-    if(req.session.tipocuenta !== 2)
+    if(req.session.user.tipocuenta !== 2)
         return res.send("No es administrador");
 
     const idusuario = req.query.idusuario;
