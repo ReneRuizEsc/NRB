@@ -55,32 +55,32 @@ const verifyUserFn = (req, res, client) => {
     const randStr = crypto.randomBytes(5).toString('hex');
     let fileExt;
 
-    let filepath = [];
+    let filepath = {};
 
     Object.entries(file).forEach(([key, value]) => {
       fileExt = getFileExtension(value.name);
 
         if(key == 'fotocredencialf')
         {
-            filepath.push(`${__dirname}/../files/users/${id}/verify/credential-F-${randStr}${fileExt}`);
+            filepath.credF = `${__dirname}/../files/users/${id}/verify/credential-F-${randStr}${fileExt}`;
             value.mv(`${__dirname}/../files/users/${id}/verify/credential-F-${randStr}${fileExt}`, (err) => console.log(err))
         }
         if(key == 'fotocredencialt')
         {
 
-            filepath.push(`${__dirname}/../files/users/${id}/verify/credential-T-${randStr}${fileExt}`);
+            filepath.credT = `${__dirname}/../files/users/${id}/verify/credential-T-${randStr}${fileExt}`;
             value.mv(`${__dirname}/../files/users/${id}/verify/credential-T-${randStr}${fileExt}`, (err) => console.log(err))
         }
         if(key == 'fotorostro')
         {
-            filepath.push(`${__dirname}/../files/users/${id}/verify/fotoRostro-${randStr}${fileExt}`);
+            filepath.rostro = `${__dirname}/../files/users/${id}/verify/fotoRostro-${randStr}${fileExt}`;
             value.mv(`${__dirname}/../files/users/${id}/verify/fotoRostro-${randStr}${fileExt}`, (err) => console.log(err))
 
         }
     })
 
     let query = 'UPDATE verificacion SET fotoCredencialF = $1, fotoCredencialT = $2, fotoRostro = $3, pendiente = true WHERE idusuario_fk = $4;';
-    client.query(query, [filepath[0], filepath[1], filepath[2], id],
+    client.query(query, [filepath.credF, filepath.credT, filepath.rostro, id],
         (err, result) => {
             if (err)
             {
