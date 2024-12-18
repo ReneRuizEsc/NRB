@@ -11,3 +11,5 @@ function getFileExtension(name){
 module.exports = {
     getFileExtension
 }
+
+//This serves no purpose now; its reduntant and never used.
