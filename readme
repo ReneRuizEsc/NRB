@@ -1,0 +1,8 @@
+Only once: npm i express
+
+Starting server: nodemon index.js
+
+Current situation -------------------------------
+
+- Db connection has been changed and not tested.
+- Bk-Front connection has not been tested.

@@ -1,18 +1,27 @@
+/////// Depencies ///////
 const express = require("express");
 const cors = require("cors");
+const session = require("express-session");
+const fileUpload = require("express-fileupload");
+const bodyParser = require("body-parser");
 const Pool = require("pg").Pool;
 
-require("dotenv").config();
-const fileUpload = require("express-fileupload");
+require("dotenv").config(); //Used to load .env
 
-/////// CONEXIÓN BASE DE DATOS ///////
+/////// Const ///////
+
+const oneDay = 1000 * 60 * 60 * 24;
+const frontendURL = process.env.FRONTEND;
+const PORT = process.env.LISTEN_PORT;
+
+/////// DB Connection ///////
 let client = null;
 
 const db = new Pool({
-  user: "goldkkme",
-  host: "peanut.db.elephantsql.com",
-  database: "goldkkme",
-  password: "FcXXaYxve6R_cjWWwod7xUv9FI-R99Cv",
+  user: "posgres",
+  host: "127.0.0.1",
+  database: "NiceRider",
+  password: "9312",
   port: 5432,
 });
 
@@ -23,18 +32,7 @@ try {
 } catch (error) {
   console.log(error);
 }
-/////////////////////////////////////
-
-
-
-// Para las sesiones //
-const bodyParser = require("body-parser");
-//const cookieParser = require('cookie-parser');
-const session = require("express-session");
-
-const oneDay = 1000 * 60 * 60 * 24;
-const frontendURL = process.env.FRONTEND;
-const PORT = process.env.LISTEN_PORT;
+/////// Session ///////
 
 const app = express();
 app.use(express.json());
@@ -46,7 +44,6 @@ app.use(
   })
 );
 
-//app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   session({
@@ -56,8 +53,6 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: oneDay,
-      //sameSite: 'strict',
-
       secure: "auto",
       httpOnly: true,
       sameSite: 'strict',
@@ -65,7 +60,7 @@ app.use(
   })
 );
 
-// Para carga de archivos
+/////// File upload ///////
 app.use(fileUpload({
   useTempFiles : true,
   tempFileDir : '/tmp/',
@@ -227,7 +222,6 @@ app.post("/showClubEventPoints", (req, res) => showClubEventPointsFn(req, res, c
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 app.get("/checkLogin", (req, res) => {
-  // Este get sirve para verificar si hay una sesión guardada
   if (req.session.user) {
     res.send({ isLogged: true, user: req.session.user });
   } else {
@@ -248,6 +242,8 @@ app.post("/logout", (req, res) => {
   }
 });
 
+
+/////// Start Server ///////
 app.listen(PORT, () => {
   console.log("Server running. Listening on port "+PORT);
 });
